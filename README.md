@@ -3,4 +3,15 @@ Differential Space is a minimalist turn-based space strategy game I made for my 
 
 ## How do I play this?
 
-I've only checked in the Go server so far. Thinking about how to distribute the binaries.
+You'll need two windows, one to launch the server and the other to launch the client.
+
+### Launch the Server
+1. [Install Go](https://golang.org/doc/install). Remember to add GOPATH to your PATH.
+1. Build and launch the server.
+
+   ```
+   go install differential-space.go && differential-space
+   ```
+   
+### Launch the Client
+

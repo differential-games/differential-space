@@ -16,7 +16,7 @@ func (s *Server) HandleNextTurn(w http.ResponseWriter, r *http.Request) {
 		player := s.PlayerTurn
 		if player == 1 {
 			// This is the Human player.
-			return
+			// return
 		}
 
 		moves := ai.PickMoves(player, s.Planets, game.DefaultOptions.Difficulty)
