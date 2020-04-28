@@ -2,9 +2,14 @@
 Differential Space is a minimalist turn-based space strategy game I made for my video series.
 
 ## How do I play this?
-You'll need two windows, one to launch the server, and the other to launch the client.
+The game has two binaries - one for the server, and the other for a client.
+I haven't yet written code to combine these two binaries into one.
 
 ### Launch the Server
+If you're running on Windows, you can
+[download the binary](https://drive.google.com/file/d/1YbToM27Yhorl9Fa0C1bP2sWDIkx2t688/view?usp=sharing)
+instead of building it.
+
 1. [Install Go](https://golang.org/doc/install). Remember to add GOPATH to your PATH.
 1. Build and launch the server.
 
