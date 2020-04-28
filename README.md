@@ -7,7 +7,7 @@ I haven't yet written code to combine these two binaries into one.
 
 ### Launch the Server
 If you're running on Windows, you can
-[download the binary](https://drive.google.com/file/d/1YbToM27Yhorl9Fa0C1bP2sWDIkx2t688/view?usp=sharing)
+[download the v0.1.0 binary](https://drive.google.com/file/d/1YbToM27Yhorl9Fa0C1bP2sWDIkx2t688/view?usp=sharing)
 instead of building it.
 
 1. [Install Go](https://golang.org/doc/install). Remember to add GOPATH to your PATH.
@@ -61,7 +61,7 @@ A planet may have at most eight ships.
 A black square on a planet indicates that it has already used its move this turn.
 All ships present on the planet participate in the move.
 
-If a planet does not use its turn, next turn it will build one ship.
+If a planet does not use its move, next turn it will build one ship.
 
 Moves are broken down as follows:
 #### Colonization
@@ -105,8 +105,18 @@ If it is, port 8080 may be in use.
 The game doesn't yet support modifying what port the server/client communicate through.
 
 ## TODO
-1. **Color-blind mode**.
-Ideally the default colors scheme should be deuteronamoly- and deuteranopia-friendly.
-1. **Battle prediction**. Show estimated damage dealt to enemy planets.
-1. **Window resolution**. Allow setting the game window resolution.
-1. **Linux and Mac installation**.
+These are not in order.
+
+- **Color-blind support**.
+The color scheme should be deuteronamoly- and deuteranopia-friendly, and use shapes to indicate ownership as well as colors.
+- **Battle prediction**. Show estimated damage dealt to enemy planets.
+- **Window resolution**. Allow setting the game window resolution.
+- **Linux and Mac installation**.
+- **Rotation speed**. Allow configuring how quickly stars move.
+- **More players**. Support up to 16 players.
+
+## Non-Goals
+This was a fun project to work on for my video series, but I'm not going to do much else on it.
+If you'd like to contribute code to do these, feel free!
+
+- Remote multiplayer
