@@ -12,13 +12,13 @@ const (
 )
 
 type Move struct {
-	// From is the id of the planet launching the attack.
+	// From is the id of the planet being moved from.
 	From int
-	// To is the id of the planet being attacked.
+	// To is the id of the planet being moved to.
 	To   int
 }
 
-// Move performs an attack from one planet to another.
+// Move performs an move from one planet to another.
 //
 // Returns an error if the Move is invalid.
 func (g *Game) Move(move Move) error {
@@ -53,7 +53,7 @@ func (g *Game) Move(move Move) error {
 	}
 
 	if win {
-		// The planet has been taken over by the attacker.
+		// The planet has been taken over by the mover.
 		g.Planets[move.To].Owner = g.Planets[move.From].Owner
 		// The just-conquered Planet is not ready.
 		g.Planets[move.To].Ready = false
@@ -75,23 +75,23 @@ func (g *Game) Move(move Move) error {
 	return nil
 }
 
-func (g *Game) AttackProbability(attack Move) (float64, error) {
-	if attack.From == attack.To {
-		return 0.0, errors.New("a planet cannot attack itself")
+func (g *Game) AttackProbability(move Move) (float64, error) {
+	if move.From == move.To {
+		return 0.0, errors.New("cannot move from and to the same planet")
 	}
 
-	from := g.Planets[attack.From]
+	from := g.Planets[move.From]
 	if from.Owner == 0 {
-		return 0.0, errors.New("the environment cannot attack")
+		return 0.0, errors.New("the environment cannot move")
 	}
 	if from.Owner != g.PlayerTurn {
 		return 0.0, errors.Errorf("it is not player %d's turn", from.Owner)
 	}
 	if !from.Ready || from.Strength == 0 {
-		return 0.0, errors.Errorf("planet is not ready to attack")
+		return 0.0, errors.Errorf("planet is not ready to move")
 	}
 
-	to := g.Planets[attack.To]
+	to := g.Planets[move.To]
 	d := Dist(from, to)
 	if d > 5 {
 		return 0.0, errors.Errorf("target is too far")
@@ -103,7 +103,7 @@ func (g *Game) AttackProbability(attack Move) (float64, error) {
 	return WinProbability(d), nil
 }
 
-// WinProbability returns the probability of an attacker winning a battle.
+// WinProbability returns the probability of an attacker inflicting damage in a round of battle.
 //
 // from is the id of the Planet launching the attack.
 // to is the id of the Planet being attacked.

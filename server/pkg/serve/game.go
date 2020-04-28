@@ -15,11 +15,11 @@ func (s *Server) HandleGame(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) createGame(w http.ResponseWriter) {
-	g, err := game.New(game.DefaultOptions)
+	g, err := game.New(s.options.Options)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	s.Game = g
+	s.game = g
 }

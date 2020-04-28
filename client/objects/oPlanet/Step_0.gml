@@ -24,4 +24,4 @@ if post_attack_predict != -1 {
 parent_map.targeted_planet = map_index;
 attack_str = "{\"From\": " + string(parent_map.selected_planet) + ", \"To\": " + string(map_index) + "}"
 show_debug_message(attack_str);
-post_attack_predict = http_post_string("http://localhost:8080/attack/predict", attack_str);
+post_attack_predict = http_post_string("http://localhost:8080/move/predict", attack_str);

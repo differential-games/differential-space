@@ -1,37 +1,33 @@
 package game
 
 type Options struct {
-	Planets PlanetOptions
-	Players PlayerOptions
-	// Difficulty is how optimal the computer plays.
-	// 1.0 is hard.
-	// 0.0 the opponent does nothing.
-	Difficulty float64
+	PlanetOptions
+	PlayerOptions
 }
 
 type PlanetOptions struct {
 	// NumPlanets is the number of Planets in the game.
-	NumPlanets int
+	NumPlanets int `json:"numPlanets"`
 	// Radius is the max radius from the center of the galaxy.
-	Radius int
+	Radius int `json:"radius"`
 	// MinRadius is the min radius from the center of the galaxy.
-	MinRadius int
+	MinRadius int `json:"minRadius"`
 }
 
 type PlayerOptions struct {
 	// NumPlayers is the number of Players in the game, excluding
 	// the Environment.
-	NumPlayers int
+	NumPlayers int `json:"numPlayers"`
 }
 
+// DefaultOptions are the options used if none are specified.
 var DefaultOptions = Options{
-	Difficulty: 0.5,
-	Planets: PlanetOptions{
+	PlanetOptions: PlanetOptions{
 		NumPlanets: 40,
 		Radius:     10,
 		MinRadius:  5,
 	},
-	Players: PlayerOptions{
+	PlayerOptions: PlayerOptions{
 		NumPlayers: 4,
 	},
 }

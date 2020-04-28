@@ -8,5 +8,5 @@ func (s *Server) HandlePlayers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJson(w, s.Players)
+	writeJson(w, s.game.Players)
 }

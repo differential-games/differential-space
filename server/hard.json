@@ -1,0 +1,8 @@
+{
+  "difficulty": 1.0,
+  "humanPlayers": [1],
+  "minRadius": 5,
+  "numPlayers": 4,
+  "numPlanets": 40,
+  "radius": 10
+}

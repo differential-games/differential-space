@@ -7,14 +7,14 @@ import (
 )
 
 func (s *Server) HandlePlanets(w http.ResponseWriter, r *http.Request) {
-	if s.Game == nil {
+	if s.game == nil {
 		http.NotFound(w, r)
 		return
 	}
 
 	switch r.Method {
 	case http.MethodGet:
-		writeJson(w, s.Planets)
+		writeJson(w, s.game.Planets)
 	default:
 		http.Error(w, "not allowed", http.StatusMethodNotAllowed)
 	}
@@ -27,16 +27,16 @@ func (s *Server) ServePlanet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if id < 0 || int(id) >= len(s.Planets) {
+	if id < 0 || int(id) >= len(s.game.Planets) {
 		http.NotFound(w, r)
 		return
 	}
 
 	switch r.Method {
 	case http.MethodGet:
-		writeJson(w, s.Game.Planets[id])
+		writeJson(w, s.game.Planets[id])
 	case http.MethodPut:
-		putJson(w, r.Body, &s.Game.Planets[id])
+		putJson(w, r.Body, &s.game.Planets[id])
 	default:
 		http.Error(w, "not allowed", http.StatusMethodNotAllowed)
 	}

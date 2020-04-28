@@ -2,9 +2,6 @@
 Differential Space is a minimalist turn-based space strategy game I made for my video series.
 
 ## How do I play this?
-For now, it isn't human-playable without modifying the server code, but I'll be adding a way to soon.
-All you can do now is watch AI opponents play against each other. Again, this will change very soon.
-
 You'll need two windows, one to launch the server, and the other to launch the client.
 
 ### Launch the Server
@@ -15,6 +12,8 @@ You'll need two windows, one to launch the server, and the other to launch the c
    cd server
    go install differential-space.go && differential-space
    ```
+
+Alternatively, after `go install` you can execute the binary locally from GOPATH.
 
 ### Install and Launch the Client
 1. Install `differential-space-client.exe`. You'll have the option to immediately launch
@@ -27,7 +26,25 @@ whose turn it is.
 
 I'll add instructions and rules once the game is configurable and human-playable.
 
-### Troubleshooting
-If you just see an empty starfield, the game isn't connecting to the server properly. This may be
+## Configuring the Game
+Configure the game with a JSON configuration file.
+
+For examples, see sample [easy](server/easy.json) and [hard](server/hard.json) configurations.
+The server prints out the configuration it is using on startup.
+
+Option definitions:
+- **difficulty** `[0.0, 1.0]`, is how intelligent the AI players are.
+AI opponents receive no benefits whatsoever.
+Higher is more difficult. I haven't won against an AI at `1.0` yet.
+- **humanPlayers** is the IDs of the human players.
+The server automatically acts for non-human Players.
+- **minRadius** is the minimum radius of Planets in the system.
+- **numPlayers** is the number of Players in the game.
+The server supports as many Players as you want, but the client only supports up to 4.
+- **numPlanets** is the number of Planets in the game.
+- **radius** is the maximum distance a Planet maybe from the center of the map.
+
+## Troubleshooting
+If you just see an empty map, the game isn't connecting to the server properly. This may be
 because port 8080 is in use. The game doesn't yet support modifying what port the server/client
 communicate through.
