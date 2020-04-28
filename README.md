@@ -80,14 +80,15 @@ The further away the enemy planet, the lower your chance of doing damage each ro
 ##### Example 1
 - An enemy planet contains 2 ships.
 - The win rate is 80% per round.
-- You are attacking with 3 ships
+- You are attacking with 3 ships.
 
-Then you must win all 3 rounds at 80% each. Thus, you have a 51.2% chance of winning.
+Then to take over the planet you must win all 3 rounds at 80% each.
+Thus, you have a 51.2% chance of taking over the enemy planet.
 
 #### Example 2
 - An enemy planet contains 5 ships.
 - The win rate is 70% per round.
-- You are attacking with 2 ships
+- You are attacking with 2 ships.
 
 You can't win, but you can still do damage.
 In this case, you have the following probabilities of doing damage:
@@ -108,3 +109,4 @@ The game doesn't yet support modifying what port the server/client communicate t
 Ideally the default colors scheme should be deuteronamoly- and deuteranopia-friendly.
 1. **Battle prediction**. Show estimated damage dealt to enemy planets.
 1. **Window resolution**. Allow setting the game window resolution.
+1. **Linux and Mac installation**.
