@@ -1,5 +1,6 @@
-# differential-space
+# Differential Space
 Differential Space is a minimalist turn-based space strategy game I made for my video series.
+The purpose is to illustrate how strategy in terrain that moves changes how players behave.
 
 ## How do I play this?
 The game has two binaries - one for the server, and the other for a client.
@@ -109,11 +110,15 @@ These are not in order.
 
 - **Color-blind support**.
 The color scheme should be deuteronamoly- and deuteranopia-friendly, and use shapes to indicate ownership as well as colors.
-- **Battle prediction**. Show estimated damage dealt to enemy planets.
-- **Window resolution**. Allow setting the game window resolution.
+- **Battle prediction**.
+Show estimated damage dealt to enemy planets and takeover likelihood.
+- **Window resolution**.
+Allow setting the game window resolution.
 - **Linux and Mac installation**.
-- **Rotation speed**. Allow configuring how quickly stars move.
-- **More players**. Support up to 16 players.
+- **Rotation speed**.
+Allow configuring how quickly stars move.
+- **More players**.
+Support up to 16 players.
 
 ## Non-Goals
 This was a fun project to work on for my video series, but I'm not going to do much else on it.
