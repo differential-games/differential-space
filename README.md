@@ -50,7 +50,7 @@ From 1 to 4, the player colors are Green, Red, Blue, Purple.
 Play occurs in a sequence of turns where each Player acts independently.
 At the start of the game, each player owns one planet, and the rest are unowned.
 
-The rectangle turn button in the upper-right-hand corner indicates whose turn it is.
+The rectangle turn button in the upper-left-hand corner indicates whose turn it is.
 At the beginning of the game, the rectangle is grey to indicate that it is no one's turn.
 Click the button to advance the turn.
 
