@@ -57,6 +57,9 @@ Click the button to advance the turn.
 The goal of the game is to take over the galaxy by eliminating your opponents.
 
 On your turn, each planet under your control with at least one ship on it may make a move.
+To move, left-click on one of your planets, and right-click on a target.
+The game will let you know if a move is invalid with a message at the top of the screen.
+
 The number of white dots on each planet indicates how many ships are there.
 A planet may have at most eight ships.
 A black square on a planet indicates that it has already used its move this turn.
@@ -119,12 +122,16 @@ Allow setting the game window resolution.
 Allow configuring how quickly stars move.
 - **More players**.
 Support up to 16 players
-- **port 8000 modification**
-to resolve 'map is empty' error
+- **Changing the port**
+To help resolve 'map is empty' error for players who want to use a different port
+- **Better UI feedback**
+Answer why a move is invalid on hovering over a target planet
+- **Scoreboard**
+Show number of planets/ships each player has.
 
 ## Non-Goals
 This was a fun project to work on for my video series, but I'm not going to do much else on it.
 If you'd like to contribute code to do these, feel free!
 
-- Remote multiplayer
-- skins
+- Online multiplayer
+- Custom skins
