@@ -1,5 +1,5 @@
 # Differential Space
-Differential Space is a minimalist turn-based space strategy game I made for my video series.
+Differential Space is a minimalist turn-based space strategy game I made for [my video series](https://www.youtube.com/channel/UC29CSoWw7ASMCTcjzc-7k0w).
 The purpose is to illustrate how strategy in terrain that moves changes how players behave.
 
 ## How do I play this?
@@ -118,10 +118,13 @@ Allow setting the game window resolution.
 - **Rotation speed**.
 Allow configuring how quickly stars move.
 - **More players**.
-Support up to 16 players.
+Support up to 16 players
+- **port 8000 modification**
+to resolve 'map is empty' error
 
 ## Non-Goals
 This was a fun project to work on for my video series, but I'm not going to do much else on it.
 If you'd like to contribute code to do these, feel free!
 
 - Remote multiplayer
+- skins
