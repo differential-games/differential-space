@@ -19,10 +19,10 @@ if dragging {
 	event_user(1);
 }
 
-if probability != -1 {
+if message != "" {
 	if targeted_planet == -1 {
-		probability = -1;
+		message = "";
 	} else if !position_meeting(mouse_x, mouse_y, ds_list_find_value(planets, targeted_planet)) {
-		targeted_planet = -1;
+		message = "";
 	}
 }

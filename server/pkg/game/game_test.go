@@ -13,8 +13,8 @@ func TestNew(t *testing.T) {
 func TestNew_GenerateStartsFailure(t *testing.T) {
 	_, err := New(func() Options {
 		options := DefaultOptions
-		options.Planets.NumPlanets = 5
-		options.Players.NumPlayers = 10
+		options.PlanetOptions.NumPlanets = 5
+		options.PlayerOptions.NumPlayers = 10
 		return options
 	}())
 
@@ -26,7 +26,7 @@ func TestNew_GenerateStartsFailure(t *testing.T) {
 func TestNew_GeneratePlanetFailure(t *testing.T) {
 	_, err := New(func() Options {
 		options := DefaultOptions
-		options.Planets.Radius = 0
+		options.PlanetOptions.Radius = 0
 		return options
 	}())
 

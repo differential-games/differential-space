@@ -77,14 +77,14 @@ func TestNewDistribution_Error(t *testing.T) {
 }
 
 func TestGeneratePlanets(t *testing.T) {
-	planets, err := GeneratePlanets(DefaultOptions.Planets)
+	planets, err := GeneratePlanets(DefaultOptions.PlanetOptions)
 
 	if err != nil {
 		t.Fatalf("got GeneratePlanets() = %s, want nil", err)
 	}
 
-	if len(planets) != DefaultOptions.Planets.NumPlanets {
-		t.Errorf("got len(GeneratePlanets()) = %d, want %d", len(planets), DefaultOptions.Planets.NumPlanets)
+	if len(planets) != DefaultOptions.PlanetOptions.NumPlanets {
+		t.Errorf("got len(GeneratePlanets()) = %d, want %d", len(planets), DefaultOptions.PlanetOptions.NumPlanets)
 	}
 }
 

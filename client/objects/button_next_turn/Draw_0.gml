@@ -8,3 +8,9 @@ if position_meeting(mouse_x, mouse_y, id) {
 } else {
 	draw_sprite(spr_next_turn, idx, 10, 10);
 }
+
+if turn == 0 {
+	draw_set_color(c_white);
+	draw_set_font(font_large)
+	draw_text(x+27, y+14, "Start");
+}

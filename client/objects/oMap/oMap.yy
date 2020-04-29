@@ -301,20 +301,6 @@
             "varType": 1
         },
         {
-            "id": "f810b1aa-0d4e-42d3-baac-af7f4d664ac4",
-            "modelName": "GMObjectProperty",
-            "mvc": "1.0",
-            "listItems": null,
-            "multiselect": false,
-            "rangeEnabled": false,
-            "rangeMax": 10,
-            "rangeMin": 0,
-            "resourceFilter": 1023,
-            "value": "-1",
-            "varName": "probability",
-            "varType": 0
-        },
-        {
             "id": "e9ef7045-8db8-4407-84fe-2a4d2736094d",
             "modelName": "GMObjectProperty",
             "mvc": "1.0",
@@ -327,6 +313,48 @@
             "value": "0",
             "varName": "tries",
             "varType": 1
+        },
+        {
+            "id": "99992f54-b7c7-4a73-bbcf-82081fbc69dc",
+            "modelName": "GMObjectProperty",
+            "mvc": "1.0",
+            "listItems": null,
+            "multiselect": false,
+            "rangeEnabled": false,
+            "rangeMax": 10,
+            "rangeMin": 0,
+            "resourceFilter": 1023,
+            "value": "0",
+            "varName": "turn_counter",
+            "varType": 0
+        },
+        {
+            "id": "f810b1aa-0d4e-42d3-baac-af7f4d664ac4",
+            "modelName": "GMObjectProperty",
+            "mvc": "1.0",
+            "listItems": null,
+            "multiselect": false,
+            "rangeEnabled": false,
+            "rangeMax": 10,
+            "rangeMin": 0,
+            "resourceFilter": 1023,
+            "value": "-1",
+            "varName": "move_code",
+            "varType": 1
+        },
+        {
+            "id": "25fa0870-37dd-4ced-8b8e-fe8256fd8bbb",
+            "modelName": "GMObjectProperty",
+            "mvc": "1.0",
+            "listItems": null,
+            "multiselect": false,
+            "rangeEnabled": false,
+            "rangeMax": 10,
+            "rangeMin": 0,
+            "resourceFilter": 1023,
+            "value": "\"\"",
+            "varName": "message",
+            "varType": 2
         }
     ],
     "solid": false,

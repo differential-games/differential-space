@@ -74,7 +74,7 @@
             "Key": "30394271-430b-4500-9d08-7997340d23d2",
             "Value": {
                 "id": "2474fe61-6e70-4722-bd81-61b3b351df3a",
-                "resourcePath": "sprites\\spr_done\\spr_done.yy",
+                "resourcePath": "sprites\\spr_ready\\spr_ready.yy",
                 "resourceType": "GMSprite"
             }
         },
@@ -130,7 +130,7 @@
             "Key": "7bc249ef-f49f-4c37-9029-c3a70b1e8fac",
             "Value": {
                 "id": "9a62ce55-b32f-4ac9-8599-ab1629fbbdde",
-                "resourcePath": "sprites\\spr_select\\spr_select.yy",
+                "resourcePath": "sprites\\spr_highlight\\spr_highlight.yy",
                 "resourceType": "GMSprite"
             }
         },
@@ -156,6 +156,14 @@
                 "id": "f243143a-6568-4e00-a909-02ddc9f0cf0e",
                 "resourcePath": "options\\linux\\options_linux.yy",
                 "resourceType": "GMLinuxOptions"
+            }
+        },
+        {
+            "Key": "af3ac6cb-af2e-44a4-8a42-125bf89b28cd",
+            "Value": {
+                "id": "34d1de84-774b-48f0-9049-9f4306942450",
+                "resourcePath": "fonts\\font_large\\font_large.yy",
+                "resourceType": "GMFont"
             }
         },
         {
@@ -260,6 +268,14 @@
                 "id": "526802aa-a333-4762-bccf-b6f6e0fa8669",
                 "resourcePath": "views\\fa26d927-402c-43d2-8ae2-12e8edf5eae4.yy",
                 "resourceType": "GMFolder"
+            }
+        },
+        {
+            "Key": "fa94cc45-d381-4eff-b7f7-84a3b0f8baa7",
+            "Value": {
+                "id": "069f5ef3-b7d0-46a1-889a-e0f593bfd2b7",
+                "resourcePath": "fonts\\font_normal\\font_normal.yy",
+                "resourceType": "GMFont"
             }
         },
         {

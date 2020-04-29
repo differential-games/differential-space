@@ -88,16 +88,6 @@ func TestGame_AttackError(t *testing.T) {
 		defender int
 	}{
 		{
-			name: "environment cannot attack",
-			turn: 0,
-			attacker: Planet{
-				Owner:    0,
-				Ready:    true,
-				Strength: 1,
-			},
-			defender: 2,
-		},
-		{
 			name: "player cannot attack out of turn",
 			turn: 2,
 			attacker: Planet{

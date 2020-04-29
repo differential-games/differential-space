@@ -75,26 +75,42 @@ func (g *Game) Move(move Move) error {
 	return nil
 }
 
+func (g *Game) AssessAttack(move Move) (string, bool) {
+	p, err := g.AttackProbability(move)
+	if err != nil {
+		return err.Error(), false
+	}
+
+	if g.Planets[move.To].Owner == 0 {
+		return "Colonize", true
+	}
+
+	if g.Planets[move.From].Owner == g.Planets[move.To].Owner {
+		return "Reinforce", true
+	}
+	return Analyze(g.Planets[move.From].Strength, g.Planets[move.To].Strength, p), true
+}
+
 func (g *Game) AttackProbability(move Move) (float64, error) {
 	if move.From == move.To {
-		return 0.0, errors.New("cannot move from and to the same planet")
+		return 0.0, errors.New("Cannot move from and to the same planet.")
 	}
 
 	from := g.Planets[move.From]
-	if from.Owner == 0 {
-		return 0.0, errors.New("the environment cannot move")
-	}
 	if from.Owner != g.PlayerTurn {
-		return 0.0, errors.Errorf("it is not player %d's turn", from.Owner)
+		return 0.0, errors.Errorf("It is not Player %d's turn.", from.Owner)
 	}
-	if !from.Ready || from.Strength == 0 {
-		return 0.0, errors.Errorf("planet is not ready to move")
+	if !from.Ready {
+		return 0.0, errors.Errorf("This planet has already moved this turn.")
+	}
+	if from.Strength == 0 {
+		return 0.0, errors.Errorf("This planet has no ships to move.")
 	}
 
 	to := g.Planets[move.To]
 	d := Dist(from, to)
 	if d > 5 {
-		return 0.0, errors.Errorf("target is too far")
+		return 0.0, errors.Errorf("Target planet is too far.")
 	}
 	if to.Owner == 0 || to.Owner == from.Owner {
 		return 1.0, nil
