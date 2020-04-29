@@ -4,26 +4,29 @@ The purpose is to illustrate how strategy in terrain that moves changes how play
 
 ## How do I play this?
 The game has two binaries - one for the server, and the other for a client.
+The server actually runs the game, and the client is the UI players interact with.
+
 I haven't yet written code to combine these two binaries into one.
 
-### Launch the Server
-If you're running on Windows, you can
-[download the v0.1.0 binary](https://drive.google.com/file/d/1YbToM27Yhorl9Fa0C1bP2sWDIkx2t688/view?usp=sharing)
-instead of building it.
+### Server
+You've got two options here.
 
+#### Download the Windows Server Executable
+If you're okay running arbitrary code compiled by a stranger on the internet, [download it here](bin/differential-space-server.exe).
+
+#### Compile the Server
 1. [Install Go](https://golang.org/doc/install). Remember to add GOPATH to your PATH.
-1. Build and launch the server.
+1. Build the server.
 
    ```
    cd server
-   go install differential-space.go && differential-space
+   go build differential-space.go
    ```
 
-Alternatively, after `go install` you can execute the binary locally from GOPATH.
-
-### Install and Launch the Client
-1. Install `differential-space-client.exe`. You'll have the option to immediately launch
-differential-space-client, and add it to your Start Menu.
+### Client
+1. Download and Run [`differential-space-client.exe`](bin/differential-space-client.exe).
+This is a Game Maker Studio installer.
+You'll have the option to immediately launch `differential-space-client`, and add it to your Start Menu.
 1. Otherwise, you'll be able to find it in `C:\Program Files (x86)\Made in GameMaker Studio 2`.
 
 ## Configuring the Game
@@ -57,17 +60,17 @@ Click the button to advance the turn.
 The goal of the game is to take over the galaxy by eliminating your opponents.
 
 On your turn, each planet under your control with at least one ship on it may make a move.
+Planets you can issue moves from have a white glowing dot at their center.
 To move, left-click on one of your planets, and right-click on a target.
 The game will let you know if a move is invalid with a message at the top of the screen.
 
 The number of white dots on each planet indicates how many ships are there.
 A planet may have at most eight ships.
-A black square on a planet indicates that it has already used its move this turn.
 All ships present on the planet participate in the move.
 
 If a planet does not use its move, next turn it will build one ship.
 
-Moves are broken down as follows:
+Moves fall into one of three categories:
 #### Colonization
 Colonization is from an owned planet to an unowned planet.
 Colonization consumes one ship.
@@ -77,9 +80,11 @@ Excess ships stay on the original planet.
 #### Attack
 An attack is from an owned planet to a planet owned by another player.
 Battle takes place in rounds, up to one for each ship on the attacker.
-If you mouse over enemy planets, the game displays the odds of doing damage each round.
-To win, you must win a number of rounds equal to the number of enemy ships, plus one to take over the planet.
-The further away the enemy planet, the lower your chance of doing damage each round.
+If you mouse over enemy planets, the game displays either:
+- the probability you'll take over the planet, or (if the probability is 0%)
+- the expected damage you'll do.
+
+The exact damage dealt is random, so you may deal more or less damage than the estimate.
 
 ##### Example 1
 - An enemy planet contains 2 ships.
@@ -100,6 +105,8 @@ In this case, you have the following probabilities of doing damage:
 - 42% - 1 damage
 - 49% - 2 damage
 
+The UI will show that you are expected to do 1 damage, but you could do 0 or 2.
+
 ## Troubleshooting
 
 ### The map is empty
@@ -113,8 +120,6 @@ These are not in order.
 
 - **Color-blind support**.
 The color scheme should be deuteronamoly- and deuteranopia-friendly, and use shapes to indicate ownership as well as colors.
-- **Battle prediction**.
-Show estimated damage dealt to enemy planets and takeover likelihood.
 - **Window resolution**.
 Allow setting the game window resolution.
 - **Linux and Mac installation**.
@@ -124,8 +129,6 @@ Allow configuring how quickly stars move.
 Support up to 16 players
 - **Changing the port**
 To help resolve 'map is empty' error for players who want to use a different port
-- **Better UI feedback**
-Answer why a move is invalid on hovering over a target planet
 - **Scoreboard**
 Show number of planets/ships each player has.
 
