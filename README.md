@@ -1,5 +1,5 @@
 # Differential Space
-Differential Space is a minimalist turn-based space strategy game I made for my video series.
+Differential Space is a minimalist turn-based space strategy game I made for [my video series](https://www.youtube.com/channel/UC29CSoWw7ASMCTcjzc-7k0w).
 The purpose is to illustrate how strategy in terrain that moves changes how players behave.
 
 ## How do I play this?
@@ -50,13 +50,16 @@ From 1 to 4, the player colors are Green, Red, Blue, Purple.
 Play occurs in a sequence of turns where each Player acts independently.
 At the start of the game, each player owns one planet, and the rest are unowned.
 
-The rectangle turn button in the upper-right-hand corner indicates whose turn it is.
+The rectangle turn button in the upper-left-hand corner indicates whose turn it is.
 At the beginning of the game, the rectangle is grey to indicate that it is no one's turn.
 Click the button to advance the turn.
 
 The goal of the game is to take over the galaxy by eliminating your opponents.
 
 On your turn, each planet under your control with at least one ship on it may make a move.
+To move, left-click on one of your planets, and right-click on a target.
+The game will let you know if a move is invalid with a message at the top of the screen.
+
 The number of white dots on each planet indicates how many ships are there.
 A planet may have at most eight ships.
 A black square on a planet indicates that it has already used its move this turn.
@@ -118,10 +121,17 @@ Allow setting the game window resolution.
 - **Rotation speed**.
 Allow configuring how quickly stars move.
 - **More players**.
-Support up to 16 players.
+Support up to 16 players
+- **Changing the port**
+To help resolve 'map is empty' error for players who want to use a different port
+- **Better UI feedback**
+Answer why a move is invalid on hovering over a target planet
+- **Scoreboard**
+Show number of planets/ships each player has.
 
 ## Non-Goals
 This was a fun project to work on for my video series, but I'm not going to do much else on it.
 If you'd like to contribute code to do these, feel free!
 
-- Remote multiplayer
+- Online multiplayer
+- Custom skins
