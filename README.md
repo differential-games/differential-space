@@ -10,11 +10,14 @@ I haven't yet written code to combine these two binaries into one.
 
 ### Server
 You've got two options here.
+The game will ask to communicate through your network.
+Feel free to forbid this since it doesn't keep the client and server from communicating on your computer.
+I don't know how to disable this message.
 
-#### Download the Windows Server Executable
+#### 1. Download the Windows Server Executable
 If you're okay running arbitrary code compiled by a stranger on the internet, [download it here](bin/differential-space-server.exe).
 
-#### Compile the Server
+#### 2. Compile the Server
 1. [Install Go](https://golang.org/doc/install). Remember to add GOPATH to your PATH.
 1. Build the server.
 
@@ -36,21 +39,22 @@ For examples, see sample [easy](server/easy.json) and [hard](server/hard.json) c
 The server prints out the configuration it is using on startup.
 
 Option definitions:
-- **difficulty** `[0.0, 1.0]`, is how intelligent the AI players are.
+- **difficulty** is how intelligent the AI players are on a scale from 0.0 to 1.0.
 Higher is more difficult. 
 AI opponents on harder difficulties receive no benefits whatsoever - they just play better.
-I haven't won against an AI at `1.0` yet.
+I haven't won against an AI at 1.0 yet.
 - **humanPlayers** is the IDs of the human players.
-The server automatically acts for non-human Players.
-- **minRadius** is the minimum radius of Planets in the system.
-- **numPlayers** is the number of Players in the game.
-The server supports as many Players as you want, but the client only supports up to 4.
+The server automatically acts for non-human players.
+- **minRadius** is the minimum radius of planets in the system.
+- **numPlayers** is the number of players in the game.
+The server supports as many players as you want, but the client only supports up to 4.
 From 1 to 4, the player colors are Green, Red, Blue, Purple.
-- **numPlanets** is the number of Planets in the game.
-- **radius** is the maximum distance a Planet maybe from the center of the map.
+- **numPlanets** is the number of planets in the game.
+- **radius** is the maximum distance a planet maybe from the center of the map.
 
 ### Play
-Play occurs in a sequence of turns where each Player acts independently.
+Play occurs in a sequence of turns where each player acts independently.
+Each circle on the screen represents a single planet.
 At the start of the game, each player owns one planet, and the rest are unowned.
 
 The rectangle turn button in the upper-left-hand corner indicates whose turn it is.
