@@ -239,11 +239,27 @@
             }
         },
         {
+            "Key": "e8ea8f57-a96a-4295-9794-2486e951de9a",
+            "Value": {
+                "id": "a8235434-8314-4aa3-8a44-2bfa179fa4d0",
+                "resourcePath": "fonts\\font_small\\font_small.yy",
+                "resourceType": "GMFont"
+            }
+        },
+        {
             "Key": "ed4c34d9-bfa1-4948-8248-e04b81ca406d",
             "Value": {
                 "id": "f4941276-42fe-493d-848b-9a2bf3a71cfa",
                 "resourcePath": "views\\ed4c34d9-bfa1-4948-8248-e04b81ca406d.yy",
                 "resourceType": "GMFolder"
+            }
+        },
+        {
+            "Key": "f195b0c8-7133-4541-940a-15650b9ba9d5",
+            "Value": {
+                "id": "da100114-d27b-49d0-ac3c-7993c8eac31c",
+                "resourcePath": "objects\\obj_scoreboard\\obj_scoreboard.yy",
+                "resourceType": "GMObject"
             }
         },
         {

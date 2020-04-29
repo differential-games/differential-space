@@ -42,9 +42,24 @@ func PickMoves(player int, planets []game.Planet, difficulty float64) []game.Mov
 	chosen = append(chosen, reinforcements...)
 
 	var result []game.Move
+	// Randomly filter out moves per the difficulty setting.
+	// In general, make fewer moves the easier the difficulty is, chosen at random.
+	// This results in less-optimal play but still interesting opponents.
+	// At 1.0, this just includes all of the optimal moves.
 	for _, m := range chosen {
-		if rand.Float64() < difficulty {
-			result = append(result, m.Move)
+		r := rand.Float64()
+		switch m.MoveType {
+		case Colonize:
+			// Increase colonization rate on easier difficulties, or the AIs expand too slowly to be interesting opponents.
+			if r*r < difficulty {
+				result = append(result, m.Move)
+			}
+		default:
+			// Limit attacking and reinforcing per the difficulty setting.
+			// This makes easier AIs fight and reinforce themselves much less efficiently.
+			if r < difficulty {
+				result = append(result, m.Move)
+			}
 		}
 	}
 	return result

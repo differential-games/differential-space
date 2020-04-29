@@ -83,6 +83,16 @@
             "enumb": 64,
             "eventtype": 8,
             "m_owner": "028c4034-dba6-49d6-8dfd-c52fb7f94c9f"
+        },
+        {
+            "id": "306449ea-d814-4960-bef2-a53d0a4840c1",
+            "modelName": "GMEvent",
+            "mvc": "1.0",
+            "IsDnD": false,
+            "collisionObjectId": "00000000-0000-0000-0000-000000000000",
+            "enumb": 12,
+            "eventtype": 7,
+            "m_owner": "028c4034-dba6-49d6-8dfd-c52fb7f94c9f"
         }
     ],
     "maskSpriteId": "00000000-0000-0000-0000-000000000000",
@@ -355,6 +365,20 @@
             "value": "\"\"",
             "varName": "message",
             "varType": 2
+        },
+        {
+            "id": "6b8f469a-a4a9-4a1c-b752-ecf24aedf531",
+            "modelName": "GMObjectProperty",
+            "mvc": "1.0",
+            "listItems": null,
+            "multiselect": false,
+            "rangeEnabled": false,
+            "rangeMax": 10,
+            "rangeMin": 0,
+            "resourceFilter": 1023,
+            "value": "0",
+            "varName": "scoreboard",
+            "varType": 1
         }
     ],
     "solid": false,

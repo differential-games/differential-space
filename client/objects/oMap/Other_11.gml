@@ -9,3 +9,5 @@ for (var i = 0; i < size; i++; ) {
 	
 	ds_list_replace(planets, i, p);
 }
+
+event_user(2);

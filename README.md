@@ -73,7 +73,7 @@ A planet may have at most eight ships.
 All ships present on the planet participate in the move.
 
 If a planet does not use its move, next turn it will build one ship.
-
+di
 Moves fall into one of three categories:
 #### Colonization
 Colonization is from an owned planet to an unowned planet.
