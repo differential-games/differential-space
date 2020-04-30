@@ -73,7 +73,7 @@ A planet may have at most eight ships.
 All ships present on the planet participate in the move.
 
 If a planet does not use its move, next turn it will build one ship.
-di
+
 Moves fall into one of three categories:
 #### Colonization
 Colonization is from an owned planet to an unowned planet.
@@ -130,11 +130,9 @@ Allow setting the game window resolution.
 - **Rotation speed**.
 Allow configuring how quickly stars move.
 - **More players**.
-Support up to 16 players
+Support up to 16 players.
 - **Changing the port**
-To help resolve 'map is empty' error for players who want to use a different port
-- **Scoreboard**
-Show number of planets/ships each player has.
+To help resolve 'map is empty' error for players who want to use a different port.
 
 ## Non-Goals
 This was a fun project to work on for my video series, but I'm not going to do much else on it.
