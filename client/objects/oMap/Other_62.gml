@@ -26,12 +26,20 @@ var resultMap = json_decode(r_str);
 var new_planets = ds_map_find_value(resultMap, "default")
 
 var size = ds_list_size(planets);
+var newSize := ds_list_size(new_planets);
+
 for (var i = 0; i < size; i++; ) {
-	var p = ds_list_find_value(new_planets, i)
+	var op = ds_list_find_value(planets, i);
+	if (i >= newSize) {
+		op.a_x = 0;
+		op.a_y = 0;
+		ds_list_replace(planets, i, op);
+		continue;
+	}
 	
+	var p = ds_list_find_value(new_planets, i);
 	// Set absolute x and y values.
-	var x_str = ds_map_find_value(p, "X")
-	var op = ds_list_find_value(planets, i)
+	var x_str = ds_map_find_value(p, "X");
 	op.a_x = real(x_str);
 
 	var y_str = ds_map_find_value(p, "Y")
@@ -46,7 +54,7 @@ for (var i = 0; i < size; i++; ) {
 	var strength = ds_map_find_value(p, "Strength");
 	op.strength = real(strength);
 	
-	ds_list_replace(planets, i, op)
+	ds_list_replace(planets, i, op);
 }
 ds_list_destroy(new_planets)
 

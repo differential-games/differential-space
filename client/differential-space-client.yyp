@@ -151,6 +151,14 @@
             }
         },
         {
+            "Key": "9d4d37d3-669b-4fe2-a4af-a0016afe0d95",
+            "Value": {
+                "id": "6b50e0c8-7e31-409c-9c07-38cba7846960",
+                "resourcePath": "fonts\\font_small_bold\\font_small_bold.yy",
+                "resourceType": "GMFont"
+            }
+        },
+        {
             "Key": "a9188620-a624-4a5a-83ae-a1b53faf038b",
             "Value": {
                 "id": "f243143a-6568-4e00-a909-02ddc9f0cf0e",
@@ -223,19 +231,19 @@
             }
         },
         {
+            "Key": "df815114-a83c-44b5-af8f-1b007fb4831a",
+            "Value": {
+                "id": "07456e74-bea5-41b5-9384-4ccb5acd736a",
+                "resourcePath": "sprites\\spr_planet\\spr_planet.yy",
+                "resourceType": "GMSprite"
+            }
+        },
+        {
             "Key": "df9403b0-c629-4c79-bc8f-d70a15a2e282",
             "Value": {
                 "id": "2ea273bd-3a32-498b-af20-6521cffff834",
                 "resourcePath": "views\\df9403b0-c629-4c79-bc8f-d70a15a2e282.yy",
                 "resourceType": "GMFolder"
-            }
-        },
-        {
-            "Key": "e63059bf-f8d4-4f82-9dec-a83ebc5df3bc",
-            "Value": {
-                "id": "770be512-592e-40b5-88c7-0ee8df27fa4d",
-                "resourcePath": "sprites\\spr_planet\\spr_planet.yy",
-                "resourceType": "GMSprite"
             }
         },
         {

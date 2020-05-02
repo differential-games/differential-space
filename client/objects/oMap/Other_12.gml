@@ -1,38 +1,20 @@
 /// @description Update scores
 // You can write your code in this editor
 
-scoreboard.player_1_score = 0;
-scoreboard.player_2_score = 0;
-scoreboard.player_3_score = 0;
-scoreboard.player_4_score = 0;
+var size = ds_list_size(scoreboard.player_scores);
+for (var i = 0; i < size; i++; ) {
+	ds_list_set(scoreboard.player_scores, i, 0);
+}
 
 var size = ds_list_size(planets);
 for (var i = 0; i < size; i++; ) {
 	var p = ds_list_find_value(planets, i);
-	switch (p.owner) {
-	case 1:
-		scoreboard.player_1_score++;
-		if scoreboard.player_1_score > size * 2 / 3 {
-			scoreboard.won = 1;
-		}
-		break;
-	case 2:
-		scoreboard.player_2_score++;
-		if scoreboard.player_2_score > size * 2 / 3 {
-			scoreboard.won = 2;
-		}
-		break;
-	case 3:
-		scoreboard.player_3_score++;
-		if scoreboard.player_3_score > size * 2 / 3 {
-			scoreboard.won = 3;
-		}
-		break;
-	case 4:
-		scoreboard.player_4_score++;
-		if scoreboard.player_4_score > size * 2 / 3 {
-			scoreboard.won = 4;
-		}
-		break;
+	if (p.owner == 0) {
+		continue;
 	}
+	var newScore = ds_list_find_value(scoreboard.player_scores, p.owner-1) + 1;
+	if newScore > (size * 2 / 3) {
+		scoreboard.won = p.owner;
+	}
+	ds_list_set(scoreboard.player_scores, p.owner-1, newScore);
 }

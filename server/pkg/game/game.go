@@ -47,15 +47,19 @@ func New(options Options) (*Game, error) {
 }
 
 // NextTurn ends the current Player's turn and moves to the next one.
-func (g *Game) NextTurn() {
+//
+// Returns the id of the next player, and whether they have any planets.
+func (g *Game) NextTurn() (int, bool) {
 	g.PlayerTurn++
 	if g.PlayerTurn == len(g.Players) {
 		// The environment Player, 0, doesn't get a turn.
 		g.PlayerTurn = 1
 	}
 
+	score := 0
 	for i, p := range g.Planets {
 		if p.Owner == g.PlayerTurn {
+			score++
 			if g.Planets[i].Ready {
 				// The Planet didn't do anything last turn, so build a ship.
 				g.Planets[i].Strength++
@@ -71,7 +75,9 @@ func (g *Game) NextTurn() {
 	}
 
 	// Advance time in the galaxy.
-	g.Rotate(4.0 / float64(len(g.Players)-1))
+	g.Rotate(2.0 / float64(len(g.Players)))
+
+	return g.PlayerTurn, score == 0
 }
 
 func (g *Game) Rotate(t float64) {

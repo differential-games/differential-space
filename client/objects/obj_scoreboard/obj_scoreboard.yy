@@ -13,6 +13,16 @@
             "enumb": 64,
             "eventtype": 8,
             "m_owner": "f195b0c8-7133-4541-940a-15650b9ba9d5"
+        },
+        {
+            "id": "53d872f2-e9f4-4b44-aa05-1a114c1e8bb2",
+            "modelName": "GMEvent",
+            "mvc": "1.0",
+            "IsDnD": false,
+            "collisionObjectId": "00000000-0000-0000-0000-000000000000",
+            "enumb": 0,
+            "eventtype": 0,
+            "m_owner": "f195b0c8-7133-4541-940a-15650b9ba9d5"
         }
     ],
     "maskSpriteId": "00000000-0000-0000-0000-000000000000",
@@ -57,49 +67,7 @@
             "rangeMin": 0,
             "resourceFilter": 1023,
             "value": "0",
-            "varName": "player_1_score",
-            "varType": 1
-        },
-        {
-            "id": "95a1af8c-491a-4348-b9eb-2425500ddb01",
-            "modelName": "GMObjectProperty",
-            "mvc": "1.0",
-            "listItems": null,
-            "multiselect": false,
-            "rangeEnabled": false,
-            "rangeMax": 10,
-            "rangeMin": 0,
-            "resourceFilter": 1023,
-            "value": "0",
-            "varName": "player_2_score",
-            "varType": 1
-        },
-        {
-            "id": "fd576119-81e9-4485-be60-553c6675b78f",
-            "modelName": "GMObjectProperty",
-            "mvc": "1.0",
-            "listItems": null,
-            "multiselect": false,
-            "rangeEnabled": false,
-            "rangeMax": 10,
-            "rangeMin": 0,
-            "resourceFilter": 1023,
-            "value": "0",
-            "varName": "player_3_score",
-            "varType": 1
-        },
-        {
-            "id": "635cc0cc-d640-4abc-b560-316464979a50",
-            "modelName": "GMObjectProperty",
-            "mvc": "1.0",
-            "listItems": null,
-            "multiselect": false,
-            "rangeEnabled": false,
-            "rangeMax": 10,
-            "rangeMin": 0,
-            "resourceFilter": 1023,
-            "value": "0",
-            "varName": "player_4_score",
+            "varName": "player_scores",
             "varType": 1
         },
         {

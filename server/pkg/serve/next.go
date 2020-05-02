@@ -1,8 +1,10 @@
 package serve
 
 import (
+	"fmt"
 	"github.com/differential-games/differential-space/pkg/ai"
 	"net/http"
+	"strconv"
 )
 
 func (s *Server) HandleNextTurn(w http.ResponseWriter, r *http.Request) {
@@ -11,7 +13,17 @@ func (s *Server) HandleNextTurn(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodPost:
-		s.game.NextTurn()
+		startPlayer := s.game.PlayerTurn
+		nextPlayer, noPlanets := s.game.NextTurn()
+		for ; noPlanets && s.game.PlayerTurn != startPlayer; {
+			nextPlayer, noPlanets = s.game.NextTurn()
+		}
+
+		_, err := w.Write([]byte(strconv.FormatInt(int64(nextPlayer), 10)))
+		if err != nil {
+			fmt.Println(err)
+		}
+
 		player := s.game.PlayerTurn
 
 		isHuman := false
@@ -35,6 +47,7 @@ func (s *Server) HandleNextTurn(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		}
+
 	default:
 		http.Error(w, "not allowed", http.StatusMethodNotAllowed)
 	}

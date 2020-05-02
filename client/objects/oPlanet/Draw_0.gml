@@ -1,6 +1,11 @@
 /// @description Insert description here
 // You can write your code in this editor
 
+if (x == 0 && y == 0) {
+	// Don't draw planet with no coordinates set.
+	return;
+}
+
 draw_sprite(spr_planet, owner, x, y);
 
 if ready {

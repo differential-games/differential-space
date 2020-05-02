@@ -9,27 +9,21 @@ draw_set_alpha(1);
 var yDraw = 110;
 var yInc = 25;
 
-draw_set_font(font_small);
-if player_1_score > 0 {
-	draw_set_color(81*256*256 + 166*256 + 0);
-	draw_text(20, yDraw, "Player 1: " + string(player_1_score));
-	yDraw += yInc;
+var size = ds_list_size(player_scores);
+
+draw_set_color(c_white)
+for (var i = 1; i <= size; i++; ) {
+	var player_score = ds_list_find_value(player_scores, i-1);
+	if parent_map.turn_counter.turn == i {
+		draw_set_font(font_small_bold);
+		draw_text(20, yDraw, "* Player "+ string(i) + ": " + string(player_score));
+	} else {
+		draw_set_font(font_small);
+		draw_text(20, yDraw, "Player "+ string(i) + ": " + string(player_score));
+	}
+	yDraw += yInc;	
 }
-if player_2_score > 0 {
-	draw_set_color(36*256*256 + 28*256 + 238);
-	draw_text(20, yDraw, "Player 2: " + string(player_2_score));
-	yDraw += yInc;
-}
-if player_3_score > 0 {
-	draw_set_color(166*256*256 + 84*256 + 0);
-	draw_text(20, yDraw, "Player 3: " + string(player_3_score));
-	yDraw += yInc;
-}
-if player_4_score > 0 {
-	draw_set_color(145*256*256 + 45*256 + 102);
-	draw_text(20, yDraw, "Player 4: " + string(player_4_score));
-	yDraw += yInc;
-}
+
 if won != -1 {
 	draw_set_color(c_white);
 	draw_text(20, yDraw, "Player " + string(won) + " wins!");
