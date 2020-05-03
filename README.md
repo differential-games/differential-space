@@ -53,6 +53,12 @@ From 1 to 4, the player colors are Green, Red, Blue, Purple.
 - **radius** is the maximum distance a planet maybe from the center of the map.
 
 ### Play
+**Controls**
+- Left mouse button: Select planet, next turn button.
+- Right mouse button: Execute move to planet.
+- Middle mouse button: Pan map.
+- Scroll wheel: Zoom map in/out.
+
 Play occurs in a sequence of turns where each player acts independently.
 Each circle on the screen represents a single planet.
 At the start of the game, each player owns one planet, and the rest are unowned.
@@ -116,23 +122,28 @@ The UI will show that you are expected to do 1 damage, but you could do 0 or 2.
 ### The map is empty
 If you just see an empty map, the game isn't connecting to the server properly.
 Ensure the server is running.
-If it is, port 8080 may be in use.
+If it is, port 8080 may be in use (the server should show an error on startup if this is the case).
 The game doesn't yet support modifying what port the server/client communicate through.
 
 ## TODO
 These are not in order.
 
-- **Color-blind support**.
-The color scheme should be deuteronamoly- and deuteranopia-friendly, and use shapes to indicate ownership as well as colors.
 - **Window resolution**.
 Allow setting the game window resolution.
 - **Linux and Mac installation**.
+I don't have access to Mac/Linux machines in quarantine, so I can't build for systems other than Windows. :/
 - **Rotation speed**.
 Allow configuring how quickly stars move.
-- **More players**.
-Support up to 16 players.
 - **Changing the port**
-To help resolve 'map is empty' error for players who want to use a different port.
+To help resolve 'map is empty' problem for players who want to use a different port than 8080.
+- **Planet status box**
+Not only will this help those with vision impairments, but it can help the game communicate its rules better.
+- **Planet names**
+This makes it easier to remember the lay of the map (especially as it is moving), and talk about it.
+- **Magnified mode**
+Enlarged sprites for those with vision impairments.
+Possibly toggleable on the keyboard?
+Zoom in on moused-over planet?
 
 ## Non-Goals
 This was a fun project to work on for my video series, but I'm not going to do much else on it.
