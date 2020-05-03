@@ -47,10 +47,12 @@ I haven't won against an AI at 1.0 yet.
 The server automatically acts for non-human players.
 - **minRadius** is the minimum radius of planets in the system.
 - **numPlayers** is the number of players in the game.
-The server supports as many players as you want, but the client only supports up to 4.
-From 1 to 4, the player colors are Green, Red, Blue, Purple.
+The server supports as many players as you want, but the client only supports up to 16.
 - **numPlanets** is the number of planets in the game.
-- **radius** is the maximum distance a planet maybe from the center of the map.
+The client supports up to 1000 planets.
+- **radius** is the maximum distance a planet may be from the center of the map.
+You'll want this to be at least the square root of numPlanets so there's enough room.
+The server shows an error if this isn't large enough.
 
 ### Play
 **Controls**

@@ -1,6 +1,6 @@
 planets = ds_list_create()
 
-for (var i = 0; i < 96; i++) {
+for (var i = 0; i < 1000; i++) {
 	var p = instance_create_depth(0, 0, i, oPlanet);
 	p.map_index = i;
 	p.parent_map = id;
