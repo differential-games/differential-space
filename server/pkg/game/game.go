@@ -10,6 +10,12 @@ type Game struct {
 
 	Planets []Planet
 	Players []Player
+
+	// RotationSpeed is how quickly the galaxy rotates.
+	//
+	// The rotation, in radians, of each planet between consecutive turns for the same player is equal to
+	// (RotationSpeed / planet radius).
+	RotationSpeed float64
 }
 
 // New creates a new Game according to the passed Opts.
@@ -42,6 +48,7 @@ func New(options Options) (*Game, error) {
 		PlayerTurn: 0,
 		Planets:    planets,
 		Players:    players,
+		RotationSpeed: options.RotationSpeed,
 	}
 	return &result, nil
 }
@@ -75,7 +82,7 @@ func (g *Game) NextTurn() (int, bool) {
 	}
 
 	// Advance time in the galaxy.
-	g.Rotate(2.0 / float64(len(g.Players)))
+	g.Rotate(g.RotationSpeed / float64(len(g.Players)))
 
 	return g.PlayerTurn, score == 0
 }

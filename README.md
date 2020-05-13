@@ -134,8 +134,6 @@ These are not in order.
 Allow setting the game window resolution.
 - **Linux and Mac installation**.
 I don't have access to Mac/Linux machines in quarantine, so I can't build for systems other than Windows. :/
-- **Rotation speed**.
-Allow configuring how quickly stars move.
 - **Changing the port**
 To help resolve 'map is empty' problem for players who want to use a different port than 8080.
 - **Planet status box**

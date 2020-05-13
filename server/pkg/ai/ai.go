@@ -6,18 +6,16 @@ import (
 	"sort"
 )
 
-// Move is a superset of game.Move which includes all necessary metadata
-// for the AI To choose optimal moves.
-type Move struct {
-	game.Move
-	// Distance is the distance between the two Planets.
-	Distance float64
-	// FromStrength is the strength of the Planet being moved from.
-	FromStrength int
-	// ToStrength is the strength of the Planet being moved to.
-	ToStrength int
-	// MoveType identifies the type of Move this is.
-	MoveType
+type Interface interface {
+	PickMoves(player int, planets []game.Planet) []game.Move
+}
+
+type AI struct {
+	Difficulty float64
+
+	Colonize []MoveAnalyzer
+	Attack []MoveAnalyzer
+	AttackFilter []MoveFilterBuilder
 }
 
 // PickMoves executes the AI algorithm for a Player
@@ -30,11 +28,11 @@ type Move struct {
 // 1.0 - very hard
 // 0.5 - easy
 // 0.0 - brain dead (the AI does nothing)
-func PickMoves(player int, planets []game.Planet, difficulty float64) []game.Move {
+func (ai *AI) PickMoves(player int, planets []game.Planet) []game.Move {
 	possible := GenerateMoves(player, planets)
 
-	colonizes, others := PickColonization(possible)
-	attacks, possibleReinforcements := PickAttacks(others)
+	colonizes, others := PickColonization(possible, ai.Colonize)
+	attacks, possibleReinforcements := PickAttacks(others, ai.Attack, ai.AttackFilter)
 	reinforcements := PickReinforcements(colonizes, attacks, possibleReinforcements)
 
 	chosen := colonizes
@@ -51,13 +49,13 @@ func PickMoves(player int, planets []game.Planet, difficulty float64) []game.Mov
 		switch m.MoveType {
 		case Colonize:
 			// Increase colonization rate on easier difficulties, or the AIs expand too slowly to be interesting opponents.
-			if r*r < difficulty {
+			if r*r < ai.Difficulty {
 				result = append(result, m.Move)
 			}
 		default:
 			// Limit attacking and reinforcing per the difficulty setting.
 			// This makes easier AIs fight and reinforce themselves much less efficiently.
-			if r < difficulty {
+			if r < ai.Difficulty {
 				result = append(result, m.Move)
 			}
 		}
@@ -121,102 +119,6 @@ const (
 	Reinforce MoveType = "Reinforce"
 	Attack    MoveType = "Attack"
 )
-
-// PickColonization chooses a set of good colonization moves from the set of possible moves.
-func PickColonization(moves []Move) ([]Move, []Move) {
-	// Sort moves from greatest to least distance.
-	// We prefer spreading out as much as possible when colonizing.
-	sort.Slice(moves, func(i, j int) bool {
-		return moves[i].Distance > moves[j].Distance
-	})
-
-	// Track optimal colony moves.
-	// Colonization always succeeds, so use the Planets least likely to
-	// be able to do anything else.
-	// Generally this will result in almost the largest number of colonization
-	// moves possible.
-	from := make(map[int]bool)
-	to := make(map[int]bool)
-	var colonizes []Move
-	for _, m := range moves {
-		if m.MoveType != Colonize {
-			continue
-		}
-		if from[m.From] || to[m.To] {
-			// We're already launching from the source planet or colonizing the target.
-			continue
-		}
-		from[m.From] = true
-		from[m.To] = true
-		colonizes = append(colonizes, m)
-	}
-
-	// Keep moves that aren't colonize Moves separate.
-	var otherMoves []Move
-	for _, m := range moves {
-		// Ignore all other moves from/to colonizing.
-		if from[m.From] || to[m.To] {
-			continue
-		}
-		otherMoves = append(otherMoves, m)
-	}
-
-	return colonizes, otherMoves
-}
-
-// PickAttacks picks good attack moves and returns:
-// 1) the set of picked attack moves, and
-// 2) the set of reinforcement moves that are still possible after those attacks.
-//
-// moves is a list of Attack and Reinforcement Moves. It must not contain any colonization Moves.
-//
-// This algorithm ignores coordinated attacks from multiple Planets, i.e. if one Planet alone could
-// not reasonably win against a target, it will choose not to even if four combined could win easily.
-func PickAttacks(moves []Move) ([]Move, []Move) {
-	// Sort moves from least to greatest distance.
-	// We get the best returns in attacking closer enemies.
-	sort.Slice(moves, func(i, j int) bool {
-		return moves[i].Distance < moves[j].Distance
-	})
-
-	var attacks []Move
-	from := make(map[int]bool)
-	// Keep track of the planets we could launch an attack from.
-	// Reinforcing from it would leave the planet vulnerable.
-	couldAttackFrom := make(map[int]bool)
-	for _, m := range moves {
-		if m.MoveType != Attack {
-			// This isn't an attack move.
-			continue
-		}
-		// Mark that we could attack from this Planet, even though we may choose not to.
-		couldAttackFrom[m.From] = true
-		if from[m.From] {
-			// We're already attacking from here.
-			continue
-		}
-
-		p := game.WinProbability(m.Distance)
-		// Attack if strength is 8 or it is expected that the target will be reduced to 0 strength.
-		// Remember that reducing an enemy to 0 strength doesn't necessarily mean a win, just that
-		// the enemy will be crippled.
-		if m.FromStrength == 8 || float64(m.FromStrength)*p > float64(m.ToStrength) {
-			from[m.From] = true
-			attacks = append(attacks, m)
-		}
-	}
-
-	var reinforcements []Move
-	for _, m := range moves {
-		if couldAttackFrom[m.From] {
-			// We could attack from this planet, so don't consider reinforcement moves from it since
-			// that will leave it vulnerable to attack.
-			continue
-		}
-		reinforcements = append(reinforcements, m)
-	}
-	return attacks, reinforcements
-}
 
 // PickReinforcements chooses a reasonable reinforcement pattern based on which Planets are being
 // moved from this turn.

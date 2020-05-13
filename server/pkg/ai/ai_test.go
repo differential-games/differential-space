@@ -1,10 +1,26 @@
-package ai
+package ai_test
 
 import (
 	"encoding/json"
+	"github.com/differential-games/differential-space/pkg/ai"
 	"github.com/differential-games/differential-space/pkg/game"
 	"testing"
 )
+
+var hardAI = &ai.AI{
+	Difficulty: 1.0,
+	Colonize: []ai.MoveAnalyzer{
+		ai.PreferFewerNeighbors,
+		ai.PreferFurther,
+	},
+	Attack: []ai.MoveAnalyzer{
+		ai.PreferCloser,
+	},
+	AttackFilter: []ai.MoveFilterBuilder{
+		ai.AttackAtMaxStrength,
+		ai.AttackAtProbability(0.5),
+	},
+}
 
 func TestPickMoves(t *testing.T) {
 	// The AIs should never pick incorrect moves.
@@ -17,8 +33,8 @@ func TestPickMoves(t *testing.T) {
 	// never generates invalid moves.
 	for i := 0; i < 100; i++ {
 		g.NextTurn()
-		player := g.PlayerTurn
-		moves := PickMoves(player, g.Planets, 1.0)
+		playerId := g.PlayerTurn
+		moves := hardAI.PickMoves(playerId, g.Planets)
 
 		for _, m := range moves {
 			err = g.Move(m)
@@ -41,19 +57,19 @@ func TestAttack(t *testing.T) {
 	p := []game.Planet{
 		// Target Planet
 		{
-			X: 0,
+			X:     0,
 			Owner: 1,
 		},
 		// Attacker.
 		{
-			X: 4,
-			Owner: 2,
+			X:        4,
+			Owner:    2,
 			Strength: 1,
-			Ready: true,
+			Ready:    true,
 		},
 	}
 
-	got := PickMoves(2, p, 1.0)
+	got := hardAI.PickMoves(2, p)
 
 	if len(got) != 1 {
 		t.Errorf("got %d moves, want 1", len(got))
@@ -64,26 +80,26 @@ func TestReinforce_1(t *testing.T) {
 	p := []game.Planet{
 		// Target Planet
 		{
-			X: 0,
+			X:     0,
 			Owner: 1,
 		},
 		// Attacker.
 		{
-			X: 4,
-			Owner: 2,
+			X:        4,
+			Owner:    2,
 			Strength: 1,
-			Ready: true,
+			Ready:    true,
 		},
 		// Reinforcer
 		{
-			X: 8,
-			Owner: 2,
+			X:        8,
+			Owner:    2,
 			Strength: 1,
-			Ready: true,
+			Ready:    true,
 		},
 	}
 
-	got := PickMoves(2, p, 1.0)
+	got := hardAI.PickMoves(2, p)
 
 	if len(got) != 2 {
 		t.Errorf("got %d moves, want 2", len(got))
@@ -94,68 +110,68 @@ func TestReinforce_8(t *testing.T) {
 	p := []game.Planet{
 		// Target Planet
 		{
-			X: 0,
+			X:     0,
 			Owner: 1,
 		},
 		// Attacker.
 		{
-			X: 4,
-			Owner: 2,
+			X:        4,
+			Owner:    2,
 			Strength: 1,
-			Ready: true,
+			Ready:    true,
 		},
 		// Reinforcers
 		{
-			X: 8,
-			Owner: 2,
+			X:        8,
+			Owner:    2,
 			Strength: 1,
-			Ready: true,
+			Ready:    true,
 		},
 		{
-			X: 12,
-			Owner: 2,
+			X:        12,
+			Owner:    2,
 			Strength: 2,
-			Ready: true,
+			Ready:    true,
 		},
 		{
-			X: 16,
-			Owner: 2,
+			X:        16,
+			Owner:    2,
 			Strength: 3,
-			Ready: true,
+			Ready:    true,
 		},
 		{
-			X: 20,
-			Owner: 2,
+			X:        20,
+			Owner:    2,
 			Strength: 4,
-			Ready: true,
+			Ready:    true,
 		},
 		{
-			X: 24,
-			Owner: 2,
+			X:        24,
+			Owner:    2,
 			Strength: 5,
-			Ready: true,
+			Ready:    true,
 		},
 		{
-			X: 28,
-			Owner: 2,
+			X:        28,
+			Owner:    2,
 			Strength: 6,
-			Ready: true,
+			Ready:    true,
 		},
 		{
-			X: 32,
-			Owner: 2,
+			X:        32,
+			Owner:    2,
 			Strength: 7,
-			Ready: true,
+			Ready:    true,
 		},
 		{
-			X: 36,
-			Owner: 2,
+			X:        36,
+			Owner:    2,
 			Strength: 8,
-			Ready: true,
+			Ready:    true,
 		},
 	}
 
-	got := PickMoves(2, p, 1.0)
+	got := hardAI.PickMoves(2, p)
 
 	if len(got) != 9 {
 		t.Errorf("got %d moves, want 8", len(got))

@@ -18,7 +18,7 @@ func TestWinProbability(t *testing.T) {
 			want: 1.0,
 		},
 		{
-			name: "50% at 0 distance",
+			name: "50% at 5 distance",
 			d:    5.0,
 			want: 0.5,
 		},
@@ -132,5 +132,39 @@ func TestGame_AttackError(t *testing.T) {
 				t.Error("got Move() = nil, want err")
 			}
 		})
+	}
+}
+
+func TestMove_Colonize(t *testing.T) {
+	g := Game{
+		PlayerTurn: 1,
+		Planets: []Planet{
+			{
+				Owner: 1,
+				Strength: 1,
+				Ready: true,
+			},
+			{
+				Owner: 0,
+			},
+		},
+	}
+
+	err := g.Move(Move{
+		From: 0,
+		To:   1,
+	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	from := g.Planets[0]
+	if diff := cmp.Diff(Planet{Owner: 1, Strength: 0, Ready: false}, from); diff != "" {
+		t.Error(diff)
+	}
+	to := g.Planets[1]
+	if diff := cmp.Diff(Planet{Owner: 1, Strength: 0, Ready: false}, to); diff != "" {
+		t.Error(diff)
 	}
 }

@@ -3,6 +3,8 @@ package game
 type Options struct {
 	PlanetOptions
 	PlayerOptions
+
+	RotationSpeed float64 `json:"rotationSpeed"`
 }
 
 type PlanetOptions struct {
@@ -23,11 +25,12 @@ type PlayerOptions struct {
 // DefaultOptions are the options used if none are specified.
 var DefaultOptions = Options{
 	PlanetOptions: PlanetOptions{
-		NumPlanets: 40,
-		Radius:     10,
-		MinRadius:  5,
+		NumPlanets: 60,
+		Radius:     12,
+		MinRadius:  4,
 	},
 	PlayerOptions: PlayerOptions{
 		NumPlayers: 4,
 	},
+	RotationSpeed: 2.0,
 }

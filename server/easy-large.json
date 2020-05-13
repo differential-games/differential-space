@@ -4,5 +4,6 @@
   "minRadius": 5,
   "numPlayers": 16,
   "numPlanets": 96,
-  "radius": 10
+  "radius": 10,
+  "rotationSpeed": 2.0
 }

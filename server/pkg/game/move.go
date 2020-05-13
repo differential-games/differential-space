@@ -3,80 +3,69 @@ package game
 import (
 	"github.com/pkg/errors"
 	"math"
-	"math/rand"
 )
 
 const (
-	ColonizeRadius = 5.0
-	MaxColonizeRadius = 10.0
+	MaxFleetSize    = 8
+	MaxMoveDistance = 5.0
 )
 
 type Move struct {
 	// From is the id of the planet being moved from.
 	From int
 	// To is the id of the planet being moved to.
-	To   int
+	To int
+}
+
+func (g *Game) move(move Move) {
+	// The mover cannot make another move.
+	g.Planets[move.From].Ready = false
+
+	from := &g.Planets[move.From]
+	to := &g.Planets[move.To]
+	if to.Owner != from.Owner && to.Owner != 0 {
+		// The destination is colonized by another Player, so Fight over the Planet.
+		win := Fight(from, to)
+		if !win {
+			// Battle lost, nothing else to do.
+			return
+		}
+	}
+
+	// Take over the Planet if it is not already owned by the mover.
+	if to.Owner != from.Owner {
+		to.Owner = from.Owner
+		from.Strength--
+	}
+
+	// Move all possible ships.
+	sumStrength := g.Planets[move.From].Strength + g.Planets[move.To].Strength
+	if sumStrength <= MaxFleetSize {
+		// All ships move.
+		g.Planets[move.To].Strength = sumStrength
+		g.Planets[move.From].Strength = 0
+	} else {
+		// Only move ships so that reinforced Planet has at most 8.
+		g.Planets[move.To].Strength = sumStrength
+		g.Planets[move.From].Strength = sumStrength - g.Planets[move.To].Strength
+	}
 }
 
 // Move performs an move from one planet to another.
 //
 // Returns an error if the Move is invalid.
 func (g *Game) Move(move Move) error {
-	p, err := g.AttackProbability(move)
+	err := g.validate(move)
 	if err != nil {
 		return err
 	}
 
-	// Colonization and reinforcement automatically succeeds.
-	win := false
-	if g.Planets[move.To].Owner == 0 {
-		win = true
-		g.Planets[move.From].Strength--
-	} else if g.Planets[move.To].Owner == g.Planets[move.From].Owner {
-		win = true
-	}
-
-	// The planet's forces have taken an action, so they cannot move again.
-	g.Planets[move.From].Ready = false
-
-	if !win {
-		for {
-			if g.Planets[move.From].Strength == 0 || g.Planets[move.To].Strength < 0 {
-				win = g.Planets[move.To].Strength == -1
-				break;
-			}
-			g.Planets[move.From].Strength--
-			if rand.Float64() < p {
-				g.Planets[move.To].Strength--
-			}
-		}
-	}
-
-	if win {
-		// The planet has been taken over by the mover.
-		g.Planets[move.To].Owner = g.Planets[move.From].Owner
-		// The just-conquered Planet is not ready.
-		g.Planets[move.To].Ready = false
-
-		if g.Planets[move.To].Strength < 0 {
-			g.Planets[move.To].Strength = 0
-		}
-		sumStrength := g.Planets[move.To].Strength + g.Planets[move.From].Strength
-		// Up to 8 ships move.
-		if sumStrength >= 8 {
-			g.Planets[move.To].Strength = 8
-			g.Planets[move.From].Strength = sumStrength - 8
-		} else {
-			g.Planets[move.To].Strength = sumStrength
-			g.Planets[move.From].Strength = 0
-		}
-	}
-
+	g.move(move)
 	return nil
 }
 
 func (g *Game) AssessAttack(move Move) (string, bool) {
-	p, err := g.AttackProbability(move)
+	err := g.validate(move)
 	if err != nil {
 		return err.Error(), false
 	}
@@ -88,35 +77,33 @@ func (g *Game) AssessAttack(move Move) (string, bool) {
 	if g.Planets[move.From].Owner == g.Planets[move.To].Owner {
 		return "Reinforce", true
 	}
-	return Analyze(g.Planets[move.From].Strength, g.Planets[move.To].Strength, p), true
+	return Analyze(g.Planets[move.From].Strength, g.Planets[move.To].Strength, WinProbability(
+		Dist(g.Planets[move.To], g.Planets[move.From]),
+	)), true
 }
 
-func (g *Game) AttackProbability(move Move) (float64, error) {
+func (g *Game) validate(move Move) error {
 	if move.From == move.To {
-		return 0.0, errors.New("Cannot move from and to the same planet.")
+		return errors.New("Cannot move from and to the same planet.")
 	}
 
 	from := g.Planets[move.From]
 	if from.Owner != g.PlayerTurn {
-		return 0.0, errors.Errorf("It is not Player %d's turn.", from.Owner)
+		return errors.Errorf("It is not Player %d's turn.", from.Owner)
 	}
 	if !from.Ready {
-		return 0.0, errors.Errorf("This planet has already moved this turn.")
+		return errors.Errorf("This planet has already moved this turn.")
 	}
 	if from.Strength == 0 {
-		return 0.0, errors.Errorf("This planet has no ships to move.")
+		return errors.Errorf("This planet has no ships to move.")
 	}
 
 	to := g.Planets[move.To]
 	d := Dist(from, to)
-	if d > 5 {
-		return 0.0, errors.Errorf("Target planet is too far.")
+	if d > MaxMoveDistance {
+		return errors.Errorf("Target planet is too far.")
 	}
-	if to.Owner == 0 || to.Owner == from.Owner {
-		return 1.0, nil
-	}
-
-	return WinProbability(d), nil
+	return nil
 }
 
 // WinProbability returns the probability of an attacker inflicting damage in a round of battle.
@@ -128,5 +115,5 @@ func (g *Game) AttackProbability(move Move) (float64, error) {
 // defenderTech is the tech level of the defender.
 func WinProbability(d float64) float64 {
 	// Decrease by 10% per unit.
-	return math.Max(0, 1.0 - d / 10)
+	return math.Max(0, 1.0-d/10)
 }
