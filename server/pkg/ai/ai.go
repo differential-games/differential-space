@@ -1,6 +1,7 @@
 package ai
 
 import (
+	"github.com/differential-games/differential-space/pkg/ai/strategy"
 	"github.com/differential-games/differential-space/pkg/game"
 	"math/rand"
 	"sort"
@@ -13,60 +14,83 @@ type Interface interface {
 type AI struct {
 	Difficulty float64
 
-	Colonize []MoveAnalyzer
-	Attack []MoveAnalyzer
-	AttackFilter []MoveFilterBuilder
+	Colonize []strategy.VectorBuilder
+	Attack []strategy.VectorBuilder
 }
 
-// PickMoves executes the AI algorithm for a Player
-//
-// player is the id of the Player to act.
-// planets is the full set of Planets in the Game.
-// difficulty is how hard the AI opponent is to defeat.
-//
-// difficulty:
-// 1.0 - very hard
-// 0.5 - easy
-// 0.0 - brain dead (the AI does nothing)
-func (ai *AI) PickMoves(player int, planets []game.Planet) []game.Move {
-	possible := GenerateMoves(player, planets)
+func deduplicate(moves []strategy.Move) ([]strategy.Move, map[int]bool) {
+	var result []strategy.Move
+	used := make(map[int]bool)
 
-	colonizes, others := PickColonization(possible, ai.Colonize)
-	attacks, possibleReinforcements := PickAttacks(others, ai.Attack, ai.AttackFilter)
-	reinforcements := PickReinforcements(colonizes, attacks, possibleReinforcements)
+	for _, m := range moves {
+		if used[m.From] {
+			continue
+		}
+		result = append(result, m)
+		used[m.From] = true
+	}
+	return result, used
+}
 
-	chosen := colonizes
-	chosen = append(chosen, attacks...)
-	chosen = append(chosen, reinforcements...)
-
-	var result []game.Move
-	// Randomly filter out moves per the difficulty setting.
-	// In general, make fewer moves the easier the difficulty is, chosen at random.
-	// This results in less-optimal play but still interesting opponents.
-	// At 1.0, this just includes all of the optimal moves.
-	for _, m := range chosen {
-		r := rand.Float64()
-		switch m.MoveType {
-		case Colonize:
-			// Increase colonization rate on easier difficulties, or the AIs expand too slowly to be interesting opponents.
-			if r*r < ai.Difficulty {
-				result = append(result, m.Move)
-			}
-		default:
-			// Limit attacking and reinforcing per the difficulty setting.
-			// This makes easier AIs fight and reinforce themselves much less efficiently.
-			if r < ai.Difficulty {
-				result = append(result, m.Move)
-			}
+func filterUsed(used map[int]bool, moves []strategy.Move) []strategy.Move {
+	var result []strategy.Move
+	for _, m := range moves {
+		if !used[m.From] {
+			result = append(result, m)
 		}
 	}
 	return result
 }
 
-// GenerateMoves generates all possible Moves for a Player.
-func GenerateMoves(player int, planets []game.Planet) []Move {
-	var result []Move
+func filterRandom(moves []strategy.Move, p float64) []strategy.Move {
+	if p >= 1.0 {
+		return moves
+	}
+	var result []strategy.Move
+	for _, m := range moves {
+		if rand.Float64() < p {
+			result = append(result, m)
+		}
+	}
+	return result
+}
 
+// PickMoves executes the AI algorithm for a Player
+func (ai *AI) PickMoves(player int, planets []game.Planet) []game.Move {
+	colonizes, attacks, reinforces := GenerateMoves(player, planets)
+
+	colonizes = Pick(colonizes, ai.Colonize)
+	colonizes = filterRandom(colonizes, ai.Difficulty)
+	colonizes, usedColonizes := deduplicate(colonizes)
+
+	attacks = filterUsed(usedColonizes, attacks)
+	attacks = Pick(attacks, ai.Attack)
+	attacks = filterRandom(attacks, ai.Difficulty)
+	attacks, usedAttacks := deduplicate(attacks)
+
+	reinforces = filterUsed(usedColonizes, reinforces)
+	reinforces = filterUsed(usedAttacks, reinforces)
+	reinforces = filterRandom(reinforces, ai.Difficulty)
+	reinforces = PickReinforcements(colonizes, attacks, reinforces)
+
+	var result []game.Move
+	for _, c := range colonizes {
+		result = append(result, c.Move)
+	}
+	for _, a := range attacks {
+		result = append(result, a.Move)
+	}
+	for _, r := range reinforces {
+		result = append(result, r.Move)
+	}
+	return result
+}
+
+// GenerateMoves generates all possible Moves for a Player.
+func GenerateMoves(player int, planets []game.Planet) ([]strategy.Move, []strategy.Move, []strategy.Move) {
+	var colonizes []strategy.Move
+	var attacks []strategy.Move
+	var reinforces []strategy.Move
 	for i, from := range planets {
 		if player != from.Owner {
 			// Can't start move from someone else's Planet.
@@ -87,7 +111,7 @@ func GenerateMoves(player int, planets []game.Planet) []Move {
 				continue
 			}
 			// Construct the potential Move and record the relevant metadata.
-			m := Move{
+			m := strategy.Move{
 				Move: game.Move{
 					From: i,
 					To:   j,
@@ -98,27 +122,17 @@ func GenerateMoves(player int, planets []game.Planet) []Move {
 			}
 			switch to.Owner {
 			case 0:
-				m.MoveType = Colonize
+				colonizes = append(colonizes, m)
 			case player:
-				m.MoveType = Reinforce
+				reinforces = append(reinforces, m)
 			default:
-				m.MoveType = Attack
+				attacks = append(attacks, m)
 			}
-			result = append(result, m)
 		}
 	}
 
-	return result
+	return colonizes, attacks, reinforces
 }
-
-// MoveType classifies a Move
-type MoveType string
-
-const (
-	Colonize  MoveType = "Colonize"
-	Reinforce MoveType = "Reinforce"
-	Attack    MoveType = "Attack"
-)
 
 // PickReinforcements chooses a reasonable reinforcement pattern based on which Planets are being
 // moved from this turn.
@@ -127,7 +141,7 @@ const (
 // 1) Attackers
 // 2) Colonizer
 // 3) Reinforcers
-func PickReinforcements(colonizes, attacks, reinforcements []Move) []Move {
+func PickReinforcements(colonizes, attacks, reinforcements []strategy.Move) []strategy.Move {
 	attackFrom := make(map[int]bool)
 	for _, m := range attacks {
 		attackFrom[m.From] = true
@@ -152,7 +166,7 @@ func PickReinforcements(colonizes, attacks, reinforcements []Move) []Move {
 	})
 
 	// Remember, we're considering them from furthest to nearest, but targets who attacked are prioritized.
-	var result []Move
+	var result []strategy.Move
 	// Keep track of how much we're already reinforcing the Planet. Don't try to send more than 8
 	// reinforcements.
 	gotReinforcements := make(map[int]int)

@@ -3,6 +3,7 @@ package ai_test
 import (
 	"github.com/differential-games/differential-space/pkg/ai"
 	"github.com/differential-games/differential-space/pkg/ai/aitest"
+	"github.com/differential-games/differential-space/pkg/ai/strategy"
 	"github.com/differential-games/differential-space/pkg/game"
 	"math/rand"
 	"sort"
@@ -18,18 +19,8 @@ func MaxSecondPlaceGame(t *testing.T) int {
 	}
 
 	maxScores := make([]int, 17)
-	player := &ai.AI{
-		Difficulty: 1.0,
-		Colonize: []ai.MoveAnalyzer{
-			ai.PreferFewerNeighbors,
-			ai.PreferFurther,
-		},
-		Attack: []ai.MoveAnalyzer{
-			ai.PreferCloser,
-		},
-	}
 	aitest.RunGame(g, func(g *game.Game) bool {
-		aitest.Turn(t, g, player)
+		aitest.Turn(t, g, hardAI)
 		maxScores = aitest.Maxes(maxScores, aitest.Scores(g.Planets))
 		return aitest.MaxScore(maxScores) >= game.DefaultOptions.NumPlanets
 	})
@@ -81,10 +72,12 @@ func (c *Counter) Get() int {
 	return c.count
 }
 
-// 0.25 = +861
-// 0.5 = +1553
-// 0.75 = +1891
-// 1.0 = +2172
+// 0.05 =   +42
+// 0.10 =  +467 = 42+425
+// 0.20 =  +855 = 467+388
+// 0.50 = +1308 = 855+453
+// 0.75 = +1496 = 1308+188
+// 1.00 = +1604 = 1496+108
 
 func Test_WinRate(t *testing.T) {
 	if testing.Short() {
@@ -94,35 +87,59 @@ func Test_WinRate(t *testing.T) {
 
 	// Odd-numbered players
 	a := &ai.AI{
-		Difficulty:     1.0,
-		Colonize: []ai.MoveAnalyzer{
-			ai.PreferFewerNeighbors,
-			ai.PreferFurther,
+		Difficulty: 1.0,
+		Colonize: []strategy.VectorBuilder{
+			{
+				Builder: strategy.PreferFewerNeighbors,
+				Weight: 1.0,
+			},
+			{
+				Builder: strategy.Builder(strategy.PreferFurther),
+				Weight: 1.0,
+			},
 		},
-		Attack: []ai.MoveAnalyzer{
-			ai.PreferCloser,
-		},
-		AttackFilter: []ai.MoveFilterBuilder{
-			ai.CoordinatedAttackAtDiff(0.25, 0.25),
-			ai.AttackAtMaxStrength,
-			ai.AttackAtProbability(0.5),
+		Attack: []strategy.VectorBuilder{
+			{
+				Builder: strategy.Builder(strategy.PreferCloser),
+				Weight: 1.0,
+			},
+			{
+				Builder: strategy.Builder(strategy.AttackAtStrength(game.MaxFleetSize)),
+				Weight: 1.0,
+			},
+			{
+				Builder: strategy.Builder(strategy.AttackAtProbability(0.5)),
+				Weight: 1.0,
+			},
 		},
 	}
 
 	// Even-numbered players
 	b := &ai.AI{
-		Difficulty:     0.5,
-		Colonize: []ai.MoveAnalyzer{
-			//ai.PreferFewerNeighbors,
-			ai.PreferFurther,
+		Difficulty: 0.75,
+		Colonize: []strategy.VectorBuilder{
+			{
+				Builder: strategy.PreferFewerNeighbors,
+				Weight: 1.0,
+			},
+			{
+				Builder: strategy.Builder(strategy.PreferFurther),
+				Weight: 1.0,
+			},
 		},
-		Attack: []ai.MoveAnalyzer{
-			ai.PreferCloser,
-		},
-		AttackFilter: []ai.MoveFilterBuilder{
-			//ai.CoordinatedAttackAtDiff(0.25, 0.25),
-			ai.AttackAtMaxStrength,
-			ai.AttackAtProbability(0.5),
+		Attack: []strategy.VectorBuilder{
+			{
+				Builder: strategy.Builder(strategy.PreferCloser),
+				Weight: 1.0,
+			},
+			{
+				Builder: strategy.Builder(strategy.AttackAtStrength(game.MaxFleetSize)),
+				Weight: 1.0,
+			},
+			{
+				Builder: strategy.Builder(strategy.AttackAtProbability(0.5)),
+				Weight: 1.0,
+			},
 		},
 	}
 

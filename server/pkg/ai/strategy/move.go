@@ -1,6 +1,8 @@
-package ai
+package strategy
 
-import "github.com/differential-games/differential-space/pkg/game"
+import (
+	"github.com/differential-games/differential-space/pkg/game"
+)
 
 // Move is a superset of game.Move which includes all necessary metadata
 // for the AI To choose optimal moves.
@@ -12,6 +14,4 @@ type Move struct {
 	FromStrength int
 	// ToStrength is the strength of the Planet being moved to.
 	ToStrength int
-	// MoveType identifies the type of Move this is.
-	MoveType
 }

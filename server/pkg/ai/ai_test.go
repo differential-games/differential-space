@@ -3,22 +3,36 @@ package ai_test
 import (
 	"encoding/json"
 	"github.com/differential-games/differential-space/pkg/ai"
+	"github.com/differential-games/differential-space/pkg/ai/strategy"
 	"github.com/differential-games/differential-space/pkg/game"
 	"testing"
 )
 
 var hardAI = &ai.AI{
 	Difficulty: 1.0,
-	Colonize: []ai.MoveAnalyzer{
-		ai.PreferFewerNeighbors,
-		ai.PreferFurther,
+	Colonize: []strategy.VectorBuilder{
+		{
+			Builder: strategy.PreferFewerNeighbors,
+			Weight: 1.0,
+		},
+		{
+			Builder: strategy.Builder(strategy.PreferFurther),
+			Weight: 1.0,
+		},
 	},
-	Attack: []ai.MoveAnalyzer{
-		ai.PreferCloser,
-	},
-	AttackFilter: []ai.MoveFilterBuilder{
-		ai.AttackAtMaxStrength,
-		ai.AttackAtProbability(0.5),
+	Attack: []strategy.VectorBuilder{
+		{
+			Builder: strategy.Builder(strategy.PreferCloser),
+			Weight: 1.0,
+		},
+		{
+			Builder: strategy.Builder(strategy.AttackAtStrength(game.MaxFleetSize)),
+			Weight: 1.0,
+		},
+		{
+			Builder: strategy.Builder(strategy.AttackAtProbability(0.5)),
+			Weight: 1.0,
+		},
 	},
 }
 
@@ -103,6 +117,8 @@ func TestReinforce_1(t *testing.T) {
 
 	if len(got) != 2 {
 		t.Errorf("got %d moves, want 2", len(got))
+		jsn, _ := json.MarshalIndent(got, "", "  ")
+		t.Log(string(jsn))
 	}
 }
 

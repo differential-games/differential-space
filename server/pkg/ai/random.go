@@ -1,6 +1,7 @@
 package ai
 
 import (
+	"github.com/differential-games/differential-space/pkg/ai/strategy"
 	"github.com/differential-games/differential-space/pkg/game"
 	"math/rand"
 )
@@ -8,9 +9,13 @@ import (
 type Random struct {}
 
 func (r Random) PickMoves(player int, planets []game.Planet) []game.Move {
-	possible := GenerateMoves(player, planets)
+	colonizes, attacks, reinforces := GenerateMoves(player, planets)
+	var possible []strategy.Move
+	possible = append(possible, colonizes...)
+	possible = append(possible, attacks...)
+	possible = append(possible, reinforces...)
 
-	movesByPlanet := make(map[int][]Move)
+	movesByPlanet := make(map[int][]strategy.Move)
 	for _, m := range possible {
 		movesByPlanet[m.From] = append(movesByPlanet[m.From], m)
 	}
