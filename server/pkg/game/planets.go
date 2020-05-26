@@ -6,7 +6,9 @@ type Planet struct {
 	X float64
 	Y float64
 
-	Radius float64
+	Radius    float64
+	InvRadius float64
+
 	Angle float64
 
 	// Owner is the id of the Player who owns this Planet.
@@ -20,25 +22,25 @@ type Planet struct {
 	Strength int
 }
 
-func distTo(x, y float64, p Planet) float64 {
-	return math.Sqrt(math.Pow(x - p.X, 2.0) + math.Pow(y - p.Y, 2.0))
+func distToSq(x, y float64, p *Planet) float64 {
+	return (x-p.X)*(x-p.X) + (y-p.Y)*(y-p.Y)
 }
 
-func Dist(p1, p2 Planet) float64 {
-	return distTo(p1.X, p1.Y, p2)
+func DistSq(p1, p2 *Planet) float64 {
+	return (p1.X-p2.X)*(p1.X-p2.X) + (p1.Y-p2.Y)*(p1.Y-p2.Y)
 }
 
 func closestTo(x, y float64, planets []Planet, ignore map[int]bool) int {
 	closest := 0
-	minDistance := math.MaxFloat64
+	minDistanceSq := math.MaxFloat64
 	for i, p := range planets {
 		if ignore[i] {
 			continue
 		}
-		distance := distTo(x, y, p)
-		if distance < minDistance {
+		distanceSq := distToSq(x, y, &p)
+		if distanceSq < minDistanceSq {
 			closest = i
-			minDistance = distance
+			minDistanceSq = distanceSq
 		}
 	}
 	return closest

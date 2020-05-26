@@ -1,8 +1,9 @@
 package serve
 
 import (
-	"github.com/differential-games/differential-space/pkg/game"
 	"net/http"
+
+	"github.com/differential-games/differential-space/pkg/game"
 )
 
 func (s *Server) HandleGame(w http.ResponseWriter, r *http.Request) {

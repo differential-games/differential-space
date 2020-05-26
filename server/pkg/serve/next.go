@@ -2,9 +2,10 @@ package serve
 
 import (
 	"fmt"
-	"github.com/differential-games/differential-space/pkg/ai"
 	"net/http"
 	"strconv"
+
+	"github.com/differential-games/differential-space/pkg/ai"
 )
 
 func (s *Server) HandleNextTurn(w http.ResponseWriter, r *http.Request) {
@@ -15,7 +16,7 @@ func (s *Server) HandleNextTurn(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		startPlayer := s.game.PlayerTurn
 		nextPlayer, noPlanets := s.game.NextTurn()
-		for ; noPlanets && s.game.PlayerTurn != startPlayer; {
+		for noPlanets && s.game.PlayerTurn != startPlayer {
 			nextPlayer, noPlanets = s.game.NextTurn()
 		}
 

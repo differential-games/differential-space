@@ -1,9 +1,10 @@
 package game
 
 import (
+	"testing"
+
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"testing"
 )
 
 func TestWinProbability(t *testing.T) {
@@ -25,6 +26,7 @@ func TestWinProbability(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			p := WinProbability(tc.d)
 
@@ -110,6 +112,7 @@ func TestGame_AttackError(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			g := Game{
 				PlayerTurn: tc.turn,
@@ -140,9 +143,9 @@ func TestMove_Colonize(t *testing.T) {
 		PlayerTurn: 1,
 		Planets: []Planet{
 			{
-				Owner: 1,
+				Owner:    1,
 				Strength: 1,
-				Ready: true,
+				Ready:    true,
 			},
 			{
 				Owner: 0,

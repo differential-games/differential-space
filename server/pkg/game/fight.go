@@ -1,9 +1,12 @@
 package game
 
-import "math/rand"
+import (
+	"math"
+	"math/rand"
+)
 
 func Fight(attacker, defender *Planet) bool {
-	p := WinProbability(Dist(*attacker, *defender))
+	p := WinProbability(math.Sqrt(DistSq(attacker, defender)))
 	for ; attacker.Strength > 0 && defender.Strength >= 0; attacker.Strength-- {
 		// A battle takes place in rounds, up to to the strength of the attacker.
 		if rand.Float64() < p {

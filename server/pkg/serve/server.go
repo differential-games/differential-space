@@ -1,8 +1,9 @@
 package serve
 
 import (
-	"github.com/differential-games/differential-space/pkg/game"
 	"sync"
+
+	"github.com/differential-games/differential-space/pkg/game"
 )
 
 type Server struct {
@@ -22,7 +23,7 @@ func New(options Options) (*Server, error) {
 
 	s := &Server{
 		options: options,
-		game: g,
+		game:    g,
 	}
 	return s, nil
 }

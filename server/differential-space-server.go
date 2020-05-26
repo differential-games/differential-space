@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/differential-games/differential-space/pkg/serve"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/differential-games/differential-space/pkg/serve"
 )
 
 var config = flag.String("config",

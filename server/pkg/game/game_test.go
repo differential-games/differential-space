@@ -62,7 +62,7 @@ func TestGame_NextTurnReadiesPlayerPlanets(t *testing.T) {
 	g.Planets[0].Owner = 1
 	g.Planets[0].Ready = false
 
-	for i := 0; i < len(g.Players) + 1; i++ {
+	for i := 0; i < len(g.Players)+1; i++ {
 		g.NextTurn()
 	}
 
@@ -100,7 +100,7 @@ func TestGame_NextTurnDoesNotReadyEnvironment(t *testing.T) {
 	g.Planets[0].Owner = 0
 	g.Planets[0].Ready = false
 
-	for i := 0; i < len(g.Players) + 1; i++ {
+	for i := 0; i < len(g.Players)+1; i++ {
 		g.NextTurn()
 	}
 

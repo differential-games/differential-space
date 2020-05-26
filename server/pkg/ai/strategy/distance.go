@@ -5,11 +5,21 @@ import (
 )
 
 // PreferFurther prefers moves further away from the starting point.
-func PreferFurther(move Move) float64 {
-	return move.Distance / game.MaxMoveDistance
+func PreferFurther(t MoveType) Strategy {
+	return func(move Move) float64 {
+		if t != move.MoveType {
+			return 0.0
+		}
+		return move.Distance * game.InvMaxMoveDistance
+	}
 }
 
 // PreferCloser prefers moves closer to the starting point.
-func PreferCloser(move Move) float64 {
-	return 1.0 - move.Distance / game.MaxMoveDistance
+func PreferCloser(t MoveType) Strategy {
+	return func(move Move) float64 {
+		if t != move.MoveType {
+			return 0.0
+		}
+		return 1.0 - move.Distance*game.InvMaxMoveDistance
+	}
 }

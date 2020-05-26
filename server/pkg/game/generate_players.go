@@ -11,8 +11,7 @@ func GeneratePlayers(options PlayerOptions) []Player {
 	for i := range players {
 		// The environment player does not have technology.
 		if i != 0 {
-			players[i] = Player{
-			}
+			players[i] = Player{}
 		}
 	}
 	return players

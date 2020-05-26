@@ -1,9 +1,10 @@
 package game
 
 import (
-	"github.com/pkg/errors"
 	"math"
 	"math/rand"
+
+	"github.com/pkg/errors"
 )
 
 const maxPlanets = 1000
@@ -22,10 +23,10 @@ func GeneratePlanets(options PlanetOptions) ([]Planet, error) {
 
 	for i := 0; i < options.NumPlanets; i++ {
 		tries := 0
-		var newPlanet Planet
+		var newPlanet *Planet
 		for ; tries < 100; tries++ {
 			newPlanet = generatePlanet(options.MinRadius, *d)
-			if !hasCollision(newPlanet, planets) {
+			if !hasCollision(newPlanet, planets[:i]) {
 				break
 			}
 		}
@@ -33,7 +34,7 @@ func GeneratePlanets(options PlanetOptions) ([]Planet, error) {
 			return nil, errors.Errorf(
 				"unable to find space for planet %d; increase galaxy radius", i)
 		}
-		planets[i] = newPlanet
+		planets[i] = *newPlanet
 	}
 
 	return planets, nil
@@ -76,25 +77,26 @@ func NewDistribution(min, max int) (*Distribution, error) {
 	return d, nil
 }
 
-func hasCollision(newPlanet Planet, planets []Planet) bool {
+func hasCollision(newPlanet *Planet, planets []Planet) bool {
 	for _, p := range planets {
-		if Dist(newPlanet, p) < 1 {
+		if DistSq(newPlanet, &p) < 1 {
 			return true
 		}
 	}
 	return false
 }
 
-func generatePlanet(minRadius int, d Distribution) Planet {
+func generatePlanet(minRadius int, d Distribution) *Planet {
 	radius := float64(minRadius) + float64(d.RandInt())
 
 	angle := rand.Float64() * 2 * math.Pi
 
-	return Planet{
+	return &Planet{
 		X: radius * math.Sin(angle),
 		Y: radius * math.Cos(angle),
 
-		Radius: radius,
-		Angle:  angle,
+		Radius:    radius,
+		InvRadius: 1.0 / radius,
+		Angle:     angle,
 	}
 }

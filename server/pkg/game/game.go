@@ -1,8 +1,9 @@
 package game
 
 import (
-	"github.com/pkg/errors"
 	"math"
+
+	"github.com/pkg/errors"
 )
 
 type Game struct {
@@ -41,13 +42,13 @@ func New(options Options) (*Game, error) {
 		// The 0 player implicitly owns all planets at the start.
 		planets[start].Owner = i + 1
 		planets[start].Ready = true
-		planets[start].Strength = 1
+		planets[start].Strength = i
 	}
 
 	result := Game{
-		PlayerTurn: 0,
-		Planets:    planets,
-		Players:    players,
+		PlayerTurn:    0,
+		Planets:       planets,
+		Players:       players,
 		RotationSpeed: options.RotationSpeed,
 	}
 	return &result, nil
@@ -89,8 +90,7 @@ func (g *Game) NextTurn() (int, bool) {
 
 func (g *Game) Rotate(t float64) {
 	for i := range g.Planets {
-		g.Planets[i].Angle += t / g.Planets[i].Radius
-
+		g.Planets[i].Angle += t * g.Planets[i].InvRadius
 		g.Planets[i].X = g.Planets[i].Radius * math.Sin(g.Planets[i].Angle)
 		g.Planets[i].Y = g.Planets[i].Radius * math.Cos(g.Planets[i].Angle)
 	}

@@ -1,13 +1,16 @@
 package game
 
 import (
-	"github.com/pkg/errors"
 	"math"
+
+	"github.com/pkg/errors"
 )
 
 const (
-	MaxFleetSize    = 8
-	MaxMoveDistance = 5.0
+	MaxFleetSize       = 8
+	MaxMoveDistance    = 5.0
+	MaxMoveDistanceSq  = MaxMoveDistance * MaxMoveDistance
+	InvMaxMoveDistance = 1.0 / MaxMoveDistance
 )
 
 type Move struct {
@@ -18,11 +21,12 @@ type Move struct {
 }
 
 func (g *Game) move(move Move) {
+	from := &g.Planets[move.From]
+	to := &g.Planets[move.To]
+
 	// The mover cannot make another move.
 	g.Planets[move.From].Ready = false
 
-	from := &g.Planets[move.From]
-	to := &g.Planets[move.To]
 	if to.Owner != from.Owner && to.Owner != 0 {
 		// The destination is colonized by another Player, so Fight over the Planet.
 		win := Fight(from, to)
@@ -39,15 +43,15 @@ func (g *Game) move(move Move) {
 	}
 
 	// Move all possible ships.
-	sumStrength := g.Planets[move.From].Strength + g.Planets[move.To].Strength
+	sumStrength := from.Strength + to.Strength
 	if sumStrength <= MaxFleetSize {
 		// All ships move.
-		g.Planets[move.To].Strength = sumStrength
-		g.Planets[move.From].Strength = 0
+		to.Strength = sumStrength
+		from.Strength = 0
 	} else {
 		// Only move ships so that reinforced Planet has at most 8.
-		g.Planets[move.To].Strength = sumStrength
-		g.Planets[move.From].Strength = sumStrength - g.Planets[move.To].Strength
+		to.Strength = sumStrength
+		from.Strength = sumStrength - to.Strength
 	}
 }
 
@@ -78,7 +82,7 @@ func (g *Game) AssessAttack(move Move) (string, bool) {
 		return "Reinforce", true
 	}
 	return Analyze(g.Planets[move.From].Strength, g.Planets[move.To].Strength, WinProbability(
-		Dist(g.Planets[move.To], g.Planets[move.From]),
+		math.Sqrt(DistSq(&g.Planets[move.To], &g.Planets[move.From])),
 	)), true
 }
 
@@ -99,8 +103,8 @@ func (g *Game) validate(move Move) error {
 	}
 
 	to := g.Planets[move.To]
-	d := Dist(from, to)
-	if d > MaxMoveDistance {
+	dsq := DistSq(&from, &to)
+	if dsq > MaxMoveDistanceSq {
 		return errors.Errorf("Target planet is too far.")
 	}
 	return nil
@@ -115,5 +119,5 @@ func (g *Game) validate(move Move) error {
 // defenderTech is the tech level of the defender.
 func WinProbability(d float64) float64 {
 	// Decrease by 10% per unit.
-	return math.Max(0, 1.0-d/10)
+	return math.Max(0, 1.0-d*0.1)
 }

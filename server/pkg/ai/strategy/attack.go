@@ -10,6 +10,9 @@ func Strength(move Move) float64 {
 
 func AttackAtStrength(strength int) Strategy {
 	return func(move Move) float64 {
+		if move.MoveType != Attack {
+			return 0.0
+		}
 		if move.FromStrength >= strength {
 			return 1.0
 		}
@@ -18,12 +21,30 @@ func AttackAtStrength(strength int) Strategy {
 }
 
 func Probability(move Move) float64 {
+	if move.MoveType != Attack {
+		return 0.0
+	}
 	return game.BattleWinChance(move.FromStrength, move.ToStrength, move.Distance)
+}
+
+func AttackIfWinLikely() Strategy {
+	return func(move Move) float64 {
+		if move.MoveType != Attack {
+			return 0.0
+		}
+		if game.WinLikely(move.FromStrength, move.ToStrength, game.WinProbability(move.Distance)) {
+			return 1.0
+		}
+		return 0.0
+	}
 }
 
 func AttackAtProbability(min float64) Strategy {
 	return func(move Move) float64 {
-		p := game.BattleWinChance(move.FromStrength, move.ToStrength, move.Distance)
+		if move.MoveType != Attack {
+			return 0.0
+		}
+		p := game.BattleWinChance(move.FromStrength, move.ToStrength, game.WinProbability(move.Distance))
 		if p >= min {
 			return 1.0
 		}

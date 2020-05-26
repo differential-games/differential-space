@@ -1,53 +1,54 @@
 package game
 
 import (
+	"testing"
+
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"testing"
 )
 
 func TestNewDistribution(t *testing.T) {
-	tcs := []struct{
-		name string
+	tcs := []struct {
+		name     string
 		min, max int
-		want Distribution
+		want     Distribution
 	}{
 		{
 			name: "0, 1",
-			min: 0,
-			max: 1,
+			min:  0,
+			max:  1,
 			want: Distribution{
 				Starts: []float64{0.0},
 			},
 		},
 		{
 			name: "0, 2",
-			min: 0,
-			max: 2,
+			min:  0,
+			max:  2,
 			want: Distribution{
 				Starts: []float64{0.0, 0.333},
 			},
 		},
 		{
 			name: "0, 3",
-			min: 0,
-			max: 3,
+			min:  0,
+			max:  3,
 			want: Distribution{
 				Starts: []float64{0.0, 0.167, 0.5},
 			},
 		},
 		{
 			name: "1, 2",
-			min: 1,
-			max: 2,
+			min:  1,
+			max:  2,
 			want: Distribution{
 				Starts: []float64{0.333},
 			},
 		},
 		{
 			name: "1, 4",
-			min: 1,
-			max: 4,
+			min:  1,
+			max:  4,
 			want: Distribution{
 				Starts: []float64{0.1, 0.3, 0.6},
 			},
@@ -89,8 +90,8 @@ func TestGeneratePlanets(t *testing.T) {
 }
 
 func TestGeneratePlanets_Failures(t *testing.T) {
-	tcs := []struct{
-		name string
+	tcs := []struct {
+		name    string
 		options PlanetOptions
 	}{
 		{

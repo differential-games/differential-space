@@ -12,4 +12,5 @@ require (
 	github.com/gonum/stat v0.0.0-20181125101827-41a0da705a5b
 	github.com/google/go-cmp v0.4.0
 	github.com/pkg/errors v0.9.1
+	golang.org/x/tools v0.0.0-20200519205726-57a9e4404bf7 // indirect
 )

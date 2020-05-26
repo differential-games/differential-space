@@ -38,5 +38,5 @@ type VectorBuilder struct {
 // Vector combines a Strategy and how strongly to weigh the strategy.
 type Vector struct {
 	Strategy Strategy
-	Weight float64
+	Weight   float64
 }

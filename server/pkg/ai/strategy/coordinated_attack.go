@@ -6,75 +6,62 @@ import (
 
 const coordinatePenalty = 0.25
 
-type FromTo struct {
-	From, To int
-}
-
 func CoordinatedAttack(moves []Move) Strategy {
-	// possibleAttacks it a map from a possible defender to the list of potential attackers
-	// and the damage the attack is expected to do.
-	defenderToAttackerToDamage := make(map[int]map[int]float64)
-	// possibleAttacks it a map from a possible defender to the list of potential attackers
-	// and the damage the attack is expected to do.
-	attackerToDefenderToDamage := make(map[int]map[int]float64)
+	// Track the moves we want.
+	wantFrom := make([]bool, nPlanets)
+	var wantFromTo [nPlanets][nPlanets]bool
 
-	// defenderToDamage is the potential damage done to each targer.
-	defenderToDamage := make(map[int]float64)
+	// attacks from x to y
+	var attacks [nPlanets][nPlanets]bool
+	// defends x from y
+	var defends [nPlanets][nPlanets]bool
 
-	// track the moves we want.
-	wantFromTo := make(map[FromTo]bool)
+	var totalDamage [nPlanets]float64
+	var damages [nPlanets][nPlanets]float64
 
 	for _, m := range moves {
-		attackScore := float64(m.ToStrength + 1) + coordinatePenalty * (1.0 + float64(len(defenderToAttackerToDamage[m.To])))
-		if defenderToDamage[m.To] > attackScore {
-			// We've already got a coordinated attack to this defender.
+		if m.MoveType != Attack {
 			continue
 		}
 
-		expectedDamage := game.WinProbability(m.Distance) * float64(m.FromStrength)
-
-		defenderToDamage[m.To] += expectedDamage
-
-		defend := defenderToAttackerToDamage[m.To]
-		if defend == nil {
-			defend = make(map[int]float64)
+		if wantFrom[m.From] || (totalDamage[m.To] > float64(m.ToStrength+1)) {
+			// 1. We've already got an attack from this attacker.
+			// 2. We've already got a coordinated attack to this defender.
+			continue
 		}
-		defend[m.From] = expectedDamage
-		defenderToAttackerToDamage[m.To] = defend
 
-		attack := attackerToDefenderToDamage[m.To]
-		if attack == nil {
-			attack = make(map[int]float64)
-		}
-		attack[m.From] = expectedDamage
-		attackerToDefenderToDamage[m.To] = attack
+		damage := game.WinProbability(m.Distance) * float64(m.FromStrength)
+		damages[m.From][m.To] = damage
 
-		attackScore = float64(m.ToStrength + 1) + coordinatePenalty * (1.0 + float64(len(defenderToAttackerToDamage[m.To])))
-		if defenderToDamage[m.To] > attackScore {
+		totalDamage[m.To] += damage - coordinatePenalty
+		attacks[m.From][m.To] = true
+		defends[m.To][m.From] = true
+
+		if totalDamage[m.To] > float64(m.ToStrength+1) {
 			// Launch the attack!
-			// Send all attackers
-			for attacker := range defenderToAttackerToDamage[m.To] {
-				wantFromTo[FromTo{
-					From: attacker,
-					To: m.To,
-				}] = true
+			for from, isFrom := range defends[m.To] {
+				if !isFrom {
+					continue
+				}
 
-				// Subtract damage from other defenders.
-				for defender := range attackerToDefenderToDamage[attacker] {
-					if defender == m.To {
+				wantFrom[from] = true
+				wantFromTo[from][m.To] = true
+
+				for to, isTo := range attacks[m.From] {
+					if !isTo || to == m.To {
 						continue
 					}
-					defenderToDamage[defender] -= attackerToDefenderToDamage[attacker][defender]
+					// Problem: These aren't sorted.
+					totalDamage[m.To] -= damages[from][to] + coordinatePenalty
 				}
 			}
+
+			continue
 		}
 	}
 
 	return func(move Move) float64 {
-		if wantFromTo[FromTo{
-			From: move.From,
-			To:   move.To,
-		}] {
+		if wantFromTo[move.From][move.To] {
 			return 1.0
 		}
 		return 0.0

@@ -2,8 +2,9 @@ package serve
 
 import (
 	"fmt"
-	"github.com/differential-games/differential-space/pkg/game"
 	"net/http"
+
+	"github.com/differential-games/differential-space/pkg/game"
 )
 
 func (s *Server) HandleMove(w http.ResponseWriter, r *http.Request) {
