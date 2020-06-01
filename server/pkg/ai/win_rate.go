@@ -25,7 +25,7 @@ func (e EloDiff) String() string {
 	return fmt.Sprintf("Elo Diff: (%.2f, %.2f, %.2f)\n", e.Mean+e.D5, e.Mean, e.Mean+e.D95)
 }
 
-func PrintWinRate(n int, a, b Interface) EloDiff {
+func PrintWinRate(n int, a, b func() Interface) EloDiff {
 	score := make(chan int)
 
 	rounds := make(chan int, n)
@@ -43,8 +43,8 @@ func PrintWinRate(n int, a, b Interface) EloDiff {
 		wg.Add(1)
 		go func() {
 			moves := make([]strategy.Move, 1000)
-			for round := range rounds {
-				err := doGame(planets, round, a, b, moves, score)
+			for _ = range rounds {
+				err := doGame(planets, 0, a(), b(), moves, score)
 				if err != nil {
 					panic(err)
 				}
@@ -98,6 +98,8 @@ func doGame(planets, round int, a, b Interface, moves []strategy.Move, score cha
 	if err != nil {
 		return err
 	}
+	a.Initialize(*g)
+	b.Initialize(*g)
 
 	winner := 0
 	err = RunGame(g, func(g *game.Game) (bool, error) {

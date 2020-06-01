@@ -1,5 +1,9 @@
 package strategy
 
+import (
+	"github.com/differential-games/differential-space/pkg/game"
+)
+
 func containsColonize(moves []Move) bool {
 	for i := range moves {
 		if moves[i].MoveType == Colonize {
@@ -9,38 +13,38 @@ func containsColonize(moves []Move) bool {
 	return false
 }
 
-func HasStrength(s int) Strategy {
-	return func(move Move) float64 {
-		if move.MoveType != Colonize {
-			return 0.0
+type PreferFewerNeighbors struct {
+	colonizers       []int
+	max              int
+	containsColonize bool
+}
+
+func (s *PreferFewerNeighbors) Initialize(g game.Game) {
+	s.colonizers = make([]int, len(g.Planets))
+}
+
+func (s *PreferFewerNeighbors) Analyze(moves []Move) {
+	s.containsColonize = containsColonize(moves)
+	if !s.containsColonize {
+		return
+	}
+
+	for i := range s.colonizers {
+		s.colonizers[i] = 0
+	}
+
+	s.max = 1
+	for _, m := range moves {
+		s.colonizers[m.To]++
+		if s.colonizers[m.To] > s.max {
+			s.max = s.colonizers[m.To]
 		}
-		if move.FromStrength < s {
-			return -1.0
-		}
-		return 1.0
 	}
 }
 
-func PreferFewerNeighbors(moves []Move) Strategy {
-	if !containsColonize(moves) {
-		return func(move Move) float64 {
-			return 0.0
-		}
+func (s *PreferFewerNeighbors) Score(move Move) float64 {
+	if move.MoveType != Colonize {
+		return 0.0
 	}
-
-	colonizers := make([]int, 60)
-	max := 1
-	for _, m := range moves {
-		colonizers[m.To]++
-		if colonizers[m.To] > max {
-			max = colonizers[m.To]
-		}
-	}
-
-	return func(move Move) float64 {
-		if move.MoveType != Colonize {
-			return 0.0
-		}
-		return float64(max - colonizers[move.To] + 1)
-	}
+	return float64(s.max - s.colonizers[move.To] + 1)
 }

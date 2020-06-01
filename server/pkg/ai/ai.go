@@ -6,18 +6,30 @@ import (
 )
 
 type Interface interface {
+	Initialize(game.Game)
+
 	PickMoves(player int, planets []game.Planet, moves []strategy.Move) []strategy.Move
 }
 
 type AI struct {
 	Difficulty float64
 
-	Strategies []strategy.VectorBuilder
+	Strategies []strategy.Vector
 }
 
 var _ Interface = &AI{}
 
+func (ai *AI) Initialize(g game.Game) {
+	for _, s := range ai.Strategies {
+		s.Strategy.Initialize(g)
+	}
+}
+
 func filterWorst(moves []strategy.Move, difficulty float64) []strategy.Move {
+	if difficulty >= 1.0 {
+		return moves
+	}
+
 	nColonize := 0
 	nAttack := 0
 	nReinforce := 0
@@ -35,33 +47,32 @@ func filterWorst(moves []strategy.Move, difficulty float64) []strategy.Move {
 	nColonize = nColonize * int(difficulty*100) / 100
 	nAttack = nAttack * int(difficulty*100) / 100
 	nReinforce = nReinforce * int(difficulty*100) / 100
-	result := make([]strategy.Move, nColonize+nAttack+nReinforce)
 
 	nResult := 0
 	for _, m := range moves {
 		switch m.MoveType {
 		case strategy.Colonize:
 			if nColonize > 0 {
-				result[nResult] = m
+				moves[nResult] = m
 				nResult++
 				nColonize--
 			}
 		case strategy.Attack:
 			if nAttack > 0 {
-				result[nResult] = m
+				moves[nResult] = m
 				nResult++
 				nAttack--
 			}
 		case strategy.Reinforce:
 			if nReinforce > 0 {
-				result[nResult] = m
+				moves[nResult] = m
 				nResult++
 				nReinforce--
 			}
 		}
 	}
 
-	return result
+	return moves[:nResult]
 }
 
 // PickMoves executes the AI algorithm for a Player

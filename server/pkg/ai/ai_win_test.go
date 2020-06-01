@@ -49,7 +49,7 @@ func maxSecondPlaceGame(t *testing.T) int {
 
 	err = ai.RunGame(g, func(g *game.Game) (bool, error) {
 		moves := make([]strategy.Move, 1000)
-		err := ai.Turn(g, ai.Hard(1.0), moves)
+		err := ai.Turn(g, ai.Hard(len(g.Planets), 1.0), moves)
 		if err != nil {
 			return false, err
 		}
@@ -61,12 +61,7 @@ func maxSecondPlaceGame(t *testing.T) int {
 		t.Fatal(err)
 	}
 
-	scores := make([]int, len(maxScores))
-	for _, s := range maxScores {
-		scores = append(scores, s)
-	}
+	sort.Ints(maxScores)
 
-	sort.Ints(scores)
-
-	return scores[3]
+	return maxScores[3]
 }

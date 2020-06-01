@@ -10,8 +10,6 @@ import (
 	"github.com/differential-games/differential-space/pkg/game"
 )
 
-var hardAI = ai.Hard(1.0)
-
 func TestPickMoves(t *testing.T) {
 	// The AIs should never pick incorrect moves.
 	g, err := game.New(game.DefaultOptions)
@@ -22,13 +20,15 @@ func TestPickMoves(t *testing.T) {
 	// Simulate 100 turns of moves. This should be sufficient to reasonably guarantee the AI
 	// never generates invalid moves.
 	moves := make([]strategy.Move, 1000)
+	player := ai.Hard(game.DefaultOptions.NumPlanets, 1.0)
+	player.Initialize(*g)
 	for i := 0; i < 100; i++ {
 		g.NextTurn()
 		playerId := g.PlayerTurn
 
-		picked := hardAI.PickMoves(playerId, g.Planets, moves)
-		err := ai.Turn(g, hardAI, moves)
+		err := ai.Turn(g, player, moves)
 		if err != nil {
+			picked := player.PickMoves(playerId, g.Planets, moves)
 			t.Error("turn", i)
 			jsn, _ := json.MarshalIndent(g.Planets, "", "  ")
 			t.Error(string(jsn))
@@ -56,7 +56,9 @@ func TestAttack(t *testing.T) {
 	}
 
 	moves := make([]strategy.Move, 5)
-	got := hardAI.PickMoves(2, p, moves)
+	player := ai.Hard(2, 1.0)
+	player.Initialize(game.Game{Planets: p})
+	got := player.PickMoves(2, p, moves)
 
 	if len(got) != 1 {
 		t.Errorf("got %d moves, want 1", len(got))
@@ -89,17 +91,18 @@ func TestReinforce_1(t *testing.T) {
 	moves := make([]strategy.Move, 100)
 	player := ai.AI{
 		Difficulty: 1.0,
-		Strategies: []strategy.VectorBuilder{
+		Strategies: []strategy.Vector{
 			{
-				Builder: strategy.Builder(strategy.MovePriority(-1, -1, 0)),
-				Weight:  1.0,
+				Strategy: strategy.NewMovePriority(-1, -1, 0),
+				Weight:   1.0,
 			},
 			{
-				Builder: strategy.ReinforceFront,
-				Weight:  1.0,
+				Strategy: strategy.NewReinforceFront(100),
+				Weight:   1.0,
 			},
 		},
 	}
+	player.Initialize(game.Game{Planets: p})
 	got := player.PickMoves(2, p, moves)
 
 	if len(got) != 1 {
@@ -177,17 +180,18 @@ func TestReinforce_8(t *testing.T) {
 	moves := make([]strategy.Move, 100)
 	player := ai.AI{
 		Difficulty: 1.0,
-		Strategies: []strategy.VectorBuilder{
+		Strategies: []strategy.Vector{
 			{
-				Builder: strategy.Builder(strategy.MovePriority(-1, -1, 0)),
-				Weight:  1.0,
+				Strategy: strategy.NewMovePriority(-1, -1, 0),
+				Weight:   1.0,
 			},
 			{
-				Builder: strategy.ReinforceFront,
-				Weight:  1.0,
+				Strategy: strategy.NewReinforceFront(100),
+				Weight:   1.0,
 			},
 		},
 	}
+	player.Initialize(game.Game{Planets: p})
 	got := player.PickMoves(2, p, moves)
 
 	if len(got) != 8 {

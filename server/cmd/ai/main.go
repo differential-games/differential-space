@@ -8,8 +8,6 @@ import (
 	"runtime/pprof"
 	"time"
 
-	"github.com/differential-games/differential-space/pkg/game"
-
 	"github.com/differential-games/differential-space/pkg/ai"
 	"github.com/differential-games/differential-space/pkg/ai/strategy"
 )
@@ -33,43 +31,42 @@ func main() {
 		defer pprof.StopCPUProfile()
 	}
 
-	ai.PrintWinRate(10000, a, b)
+	ai.PrintWinRate(100000, a, b)
 }
 
-func vb(weight float64, builder strategy.StrategyBuilder) strategy.VectorBuilder {
-	return strategy.VectorBuilder{
-		Builder: builder,
-		Weight:  weight,
+func a() ai.Interface {
+	return &ai.AI{
+		Difficulty: 1.0,
+		Strategies: []strategy.Vector{
+			ai.NewVector(1.0, strategy.NewMovePriority(0.0, -1.0, -1.0)),
+			ai.NewVector(1.0, &strategy.PreferFewerNeighbors{}),
+			ai.NewVector(1.0, strategy.PreferFurther{}),
+			ai.NewVector(1.0, strategy.PreferCloser{}),
+			ai.NewVector(1.0, &strategy.CoordinatedAttack{}),
+			ai.NewVector(1.0, strategy.AttackIfWinLikely{}),
+			ai.NewVector(1.0, strategy.NewReinforceFront(500)),
+		},
 	}
 }
 
-var a = &ai.AI{
-	Difficulty: 1.0,
-	Strategies: []strategy.VectorBuilder{
-		vb(1.0, strategy.Builder(strategy.MovePriority(0.0, -1.0, -1.0))),
-		vb(1.0, strategy.PreferFewerNeighbors),
-		vb(1.0, strategy.Builder(strategy.PreferFurther(strategy.Colonize))),
-		vb(1.0, strategy.Builder(strategy.PreferCloser(strategy.Attack))),
-		vb(1.0, strategy.Builder(strategy.AttackAtStrength(game.MaxFleetSize))),
-		vb(1.0, strategy.CoordinatedAttack),
-		vb(1.0, strategy.ReinforceFront),
-	},
+func base() ai.Interface {
+	return &ai.AI{
+		Difficulty: 1.0,
+		Strategies: nil,
+	}
 }
 
-var base = &ai.AI{
-	Difficulty: 1.0,
-	Strategies: nil,
-}
-
-var b = &ai.AI{
-	Difficulty: 1.0,
-	Strategies: []strategy.VectorBuilder{
-		vb(1.0, strategy.Builder(strategy.MovePriority(0.0, -1.0, -1.0))),
-		vb(1.0, strategy.PreferFewerNeighbors),
-		vb(1.0, strategy.Builder(strategy.PreferFurther(strategy.Colonize))),
-		vb(1.0, strategy.Builder(strategy.PreferCloser(strategy.Attack))),
-		vb(1.0, strategy.Builder(strategy.AttackAtStrength(game.MaxFleetSize))),
-		vb(1.0, strategy.CoordinatedAttack),
-		vb(1.0, strategy.ReinforceFront),
-	},
+func b() ai.Interface {
+	return &ai.AI{
+		Difficulty: 1.0,
+		Strategies: []strategy.Vector{
+			ai.NewVector(1.0, strategy.NewMovePriority(0.0, -1.0, -1.0)),
+			ai.NewVector(1.0, &strategy.PreferFewerNeighbors{}),
+			ai.NewVector(1.0, strategy.PreferFurther{}),
+			ai.NewVector(1.0, strategy.PreferCloser{}),
+			ai.NewVector(1.0, &strategy.CoordinatedAttack{}),
+			ai.NewVector(1.0, strategy.AttackIfWinLikely{}),
+			ai.NewVector(1.0, strategy.NewReinforceFront(500)),
+		},
+	}
 }

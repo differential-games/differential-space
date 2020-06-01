@@ -6,7 +6,7 @@ import (
 )
 
 func Fight(attacker, defender *Planet) bool {
-	p := WinProbability(math.Sqrt(DistSq(attacker, defender)))
+	p := WinProbability(math.Sqrt(DistSq(attacker.X, attacker.Y, defender.X, defender.Y)))
 	for ; attacker.Strength > 0 && defender.Strength >= 0; attacker.Strength-- {
 		// A battle takes place in rounds, up to to the strength of the attacker.
 		if rand.Float64() < p {

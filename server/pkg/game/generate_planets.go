@@ -79,7 +79,7 @@ func NewDistribution(min, max int) (*Distribution, error) {
 
 func hasCollision(newPlanet *Planet, planets []Planet) bool {
 	for _, p := range planets {
-		if DistSq(newPlanet, &p) < 1 {
+		if DistSq(newPlanet.X, newPlanet.Y, p.X, p.Y) < 1 {
 			return true
 		}
 	}

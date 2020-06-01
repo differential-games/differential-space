@@ -22,12 +22,25 @@ type Planet struct {
 	Strength int
 }
 
-func distToSq(x, y float64, p *Planet) float64 {
-	return (x-p.X)*(x-p.X) + (y-p.Y)*(y-p.Y)
+func NewPlanet(x, y float64, owner int, ready bool, strength int) Planet {
+	radius := math.Sqrt(x*x + y*y)
+	invRadius := 1.0 / radius
+
+	angle := math.Atan2(y, x)
+	return Planet{
+		X:         x,
+		Y:         y,
+		Radius:    radius,
+		InvRadius: invRadius,
+		Angle:     angle,
+		Owner:     owner,
+		Ready:     ready,
+		Strength:  strength,
+	}
 }
 
-func DistSq(p1, p2 *Planet) float64 {
-	return (p1.X-p2.X)*(p1.X-p2.X) + (p1.Y-p2.Y)*(p1.Y-p2.Y)
+func DistSq(p1x, p1y, p2x, p2y float64) float64 {
+	return (p1x-p2x)*(p1x-p2x) + (p1y-p2y)*(p1y-p2y)
 }
 
 func closestTo(x, y float64, planets []Planet, ignore map[int]bool) int {
@@ -37,7 +50,7 @@ func closestTo(x, y float64, planets []Planet, ignore map[int]bool) int {
 		if ignore[i] {
 			continue
 		}
-		distanceSq := distToSq(x, y, &p)
+		distanceSq := DistSq(x, y, p.X, p.Y)
 		if distanceSq < minDistanceSq {
 			closest = i
 			minDistanceSq = distanceSq

@@ -50,7 +50,7 @@ func (g *Game) move(move Move) {
 		from.Strength = 0
 	} else {
 		// Only move ships so that reinforced Planet has at most 8.
-		to.Strength = sumStrength
+		to.Strength = MaxFleetSize
 		from.Strength = sumStrength - to.Strength
 	}
 }
@@ -81,8 +81,10 @@ func (g *Game) AssessAttack(move Move) (string, bool) {
 	if g.Planets[move.From].Owner == g.Planets[move.To].Owner {
 		return "Reinforce", true
 	}
-	return Analyze(g.Planets[move.From].Strength, g.Planets[move.To].Strength, WinProbability(
-		math.Sqrt(DistSq(&g.Planets[move.To], &g.Planets[move.From])),
+	from := g.Planets[move.From]
+	to := g.Planets[move.To]
+	return Analyze(from.Strength, to.Strength, WinProbability(
+		math.Sqrt(DistSq(from.X, from.Y, to.X, to.Y)),
 	)), true
 }
 
@@ -103,7 +105,7 @@ func (g *Game) validate(move Move) error {
 	}
 
 	to := g.Planets[move.To]
-	dsq := DistSq(&from, &to)
+	dsq := DistSq(from.X, from.Y, to.X, to.Y)
 	if dsq > MaxMoveDistanceSq {
 		return errors.Errorf("Target planet is too far.")
 	}

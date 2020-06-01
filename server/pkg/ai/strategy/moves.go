@@ -20,7 +20,7 @@ func GenerateMoves(player int, planets []game.Planet, moves []Move) []Move {
 				// Can't move from a Planet to itself.
 				continue
 			}
-			dsq := game.DistSq(&from, &to)
+			dsq := game.DistSq(from.X, from.Y, to.X, to.Y)
 			if dsq > game.MaxMoveDistanceSq {
 				// Moves over 5 units are invalid.
 				continue

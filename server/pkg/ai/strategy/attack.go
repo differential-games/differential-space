@@ -4,50 +4,40 @@ import (
 	"github.com/differential-games/differential-space/pkg/game"
 )
 
-func Strength(move Move) float64 {
-	return float64(move.FromStrength) / float64(game.MaxFleetSize)
+type AttackAtStrength struct {
+	minStrength int
 }
 
-func AttackAtStrength(strength int) Strategy {
-	return func(move Move) float64 {
-		if move.MoveType != Attack {
-			return 0.0
-		}
-		if move.FromStrength >= strength {
-			return 1.0
-		}
-		return 0.0
-	}
+func NewAttackAtStrength(minStrength int) AttackAtStrength {
+	return AttackAtStrength{minStrength: minStrength}
 }
 
-func Probability(move Move) float64 {
+func (s AttackAtStrength) Initialize(game.Game) {}
+
+func (s AttackAtStrength) Analyze([]Move) {}
+
+func (s AttackAtStrength) Score(move Move) float64 {
 	if move.MoveType != Attack {
 		return 0.0
 	}
-	return game.BattleWinChance(move.FromStrength, move.ToStrength, move.Distance)
+	if move.FromStrength >= s.minStrength {
+		return 1.0
+	}
+	return 0.0
 }
 
-func AttackIfWinLikely() Strategy {
-	return func(move Move) float64 {
-		if move.MoveType != Attack {
-			return 0.0
-		}
-		if game.WinLikely(move.FromStrength, move.ToStrength, game.WinProbability(move.Distance)) {
-			return 1.0
-		}
-		return 0.0
-	}
-}
+type AttackIfWinLikely struct{}
 
-func AttackAtProbability(min float64) Strategy {
-	return func(move Move) float64 {
-		if move.MoveType != Attack {
-			return 0.0
-		}
-		p := game.BattleWinChance(move.FromStrength, move.ToStrength, game.WinProbability(move.Distance))
-		if p >= min {
-			return 1.0
-		}
+func (s AttackIfWinLikely) Initialize(game.Game) {}
+
+func (s AttackIfWinLikely) Analyze([]Move) {}
+
+func (s AttackIfWinLikely) Score(move Move) float64 {
+	if move.MoveType != Attack {
 		return 0.0
 	}
+	if game.WinLikely(move.FromStrength, move.ToStrength, game.WinProbability(move.Distance)) {
+		return 1.0
+	}
+	return 0.0
 }

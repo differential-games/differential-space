@@ -6,10 +6,25 @@ import (
 
 const coordinatePenalty = 0.25
 
-func CoordinatedAttack(moves []Move) Strategy {
+type CoordinatedAttack struct {
+	wantFromTo [nPlanets][nPlanets]bool
+}
+
+func (s *CoordinatedAttack) Initialize(game.Game) {}
+
+func (s *CoordinatedAttack) reset() {
+	for _, w := range s.wantFromTo {
+		for i := range w {
+			w[i] = false
+		}
+	}
+}
+
+func (s *CoordinatedAttack) Analyze(moves []Move) {
+	s.reset()
+
 	// Track the moves we want.
 	wantFrom := make([]bool, nPlanets)
-	var wantFromTo [nPlanets][nPlanets]bool
 
 	// attacks from x to y
 	var attacks [nPlanets][nPlanets]bool
@@ -45,7 +60,7 @@ func CoordinatedAttack(moves []Move) Strategy {
 				}
 
 				wantFrom[from] = true
-				wantFromTo[from][m.To] = true
+				s.wantFromTo[from][m.To] = true
 
 				for to, isTo := range attacks[m.From] {
 					if !isTo || to == m.To {
@@ -59,11 +74,11 @@ func CoordinatedAttack(moves []Move) Strategy {
 			continue
 		}
 	}
+}
 
-	return func(move Move) float64 {
-		if wantFromTo[move.From][move.To] {
-			return 1.0
-		}
-		return 0.0
+func (s *CoordinatedAttack) Score(move Move) float64 {
+	if s.wantFromTo[move.From][move.To] {
+		return 1.0
 	}
+	return 0.0
 }
