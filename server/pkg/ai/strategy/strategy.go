@@ -15,11 +15,5 @@ type Strategy interface {
 	// Positive indicates signal to do the move.
 	// 0.0 indicates no signal to do the move.
 	// Negative indicates signal to not do the move.
-	Score(move Move) float64
-}
-
-// Vector combines a Strategy and how strongly to weigh the strategy.
-type Vector struct {
-	Strategy Strategy
-	Weight   float64
+	Score(move *Move) float64
 }

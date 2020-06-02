@@ -10,7 +10,7 @@ import (
 func GenerateMoves(player int, planets []game.Planet, moves []Move) []Move {
 	nMoves := 0
 	for i, from := range planets {
-		if !from.Ready || player != from.Owner || from.Strength == 0 {
+		if !from.Ready || player != from.Owner {
 			// Can't start move from someone else's Planet.
 			// Can't start move from a Planet that isn't Ready or has no troops.
 			continue
@@ -27,10 +27,12 @@ func GenerateMoves(player int, planets []game.Planet, moves []Move) []Move {
 			}
 			// Construct the potential Move and record the relevant metadata.
 			mt := Attack
-			switch to.Owner {
-			case 0:
+			switch {
+			case from.Strength == 0:
+				mt = Invalid
+			case to.Owner == 0:
 				mt = Colonize
-			case player:
+			case to.Owner == player:
 				mt = Reinforce
 			}
 			moves[nMoves] = Move{

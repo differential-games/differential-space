@@ -2,6 +2,7 @@ package serve
 
 import (
 	"fmt"
+	"github.com/differential-games/differential-space/pkg/ai/strategy"
 	"net/http"
 	"strconv"
 
@@ -40,9 +41,23 @@ func (s *Server) HandleNextTurn(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		moves := ai.PickMoves(player, s.game.Planets, s.options.Difficulty)
+		aiPlayer := ai.Hard(s.options.Difficulty)
+		aiPlayer.Initialize(*s.game)
+
+		moves := make([]strategy.Move, 1000)
+		moves = aiPlayer.PickMoves(player, s.game.Planets, moves)
+
 		for _, m := range moves {
-			err := s.game.Move(m)
+			if !s.game.Planets[m.From].Ready {
+				continue
+			}
+			to := s.game.Planets[m.To]
+			if (to.Strength == 8) && (to.Owner == player) {
+				// Don't bother reinforcing an already-full planet.
+				continue
+			}
+
+			err := s.game.Move(m.Move)
 			if err != nil {
 				http.Error(w, "AI tried invalid move", http.StatusInternalServerError)
 				return

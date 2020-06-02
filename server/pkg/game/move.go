@@ -25,7 +25,7 @@ func (g *Game) move(move Move) {
 	to := &g.Planets[move.To]
 
 	// The mover cannot make another move.
-	g.Planets[move.From].Ready = false
+	from.Ready = false
 
 	if to.Owner != from.Owner && to.Owner != 0 {
 		// The destination is colonized by another Player, so Fight over the Planet.
@@ -41,6 +41,7 @@ func (g *Game) move(move Move) {
 		to.Owner = from.Owner
 		from.Strength--
 	}
+	to.Ready = false
 
 	// Move all possible ships.
 	sumStrength := from.Strength + to.Strength

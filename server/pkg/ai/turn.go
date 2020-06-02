@@ -12,7 +12,8 @@ func Turn(g *game.Game, player Interface, moves []strategy.Move) error {
 	picked := player.PickMoves(playerId, g.Planets, moves)
 
 	for _, m := range picked {
-		if !g.Planets[m.From].Ready {
+		from := g.Planets[m.From]
+		if !from.Ready || (from.Strength == 0) {
 			continue
 		}
 		to := g.Planets[m.To]

@@ -20,7 +20,7 @@ func TestPickMoves(t *testing.T) {
 	// Simulate 100 turns of moves. This should be sufficient to reasonably guarantee the AI
 	// never generates invalid moves.
 	moves := make([]strategy.Move, 1000)
-	player := ai.Hard(game.DefaultOptions.NumPlanets, 1.0)
+	player := ai.Hard(1.0)
 	player.Initialize(*g)
 	for i := 0; i < 100; i++ {
 		g.NextTurn()
@@ -56,7 +56,7 @@ func TestAttack(t *testing.T) {
 	}
 
 	moves := make([]strategy.Move, 5)
-	player := ai.Hard(2, 1.0)
+	player := ai.Hard(1.0)
 	player.Initialize(game.Game{Planets: p})
 	got := player.PickMoves(2, p, moves)
 
@@ -91,15 +91,9 @@ func TestReinforce_1(t *testing.T) {
 	moves := make([]strategy.Move, 100)
 	player := ai.AI{
 		Difficulty: 1.0,
-		Strategies: []strategy.Vector{
-			{
-				Strategy: strategy.NewMovePriority(-1, -1, 0),
-				Weight:   1.0,
-			},
-			{
-				Strategy: strategy.NewReinforceFront(100),
-				Weight:   1.0,
-			},
+		Strategies: []strategy.Strategy{
+			strategy.NewMovePriority(-1, -1, 0),
+			strategy.NewReinforceFront(100),
 		},
 	}
 	player.Initialize(game.Game{Planets: p})
@@ -180,15 +174,9 @@ func TestReinforce_8(t *testing.T) {
 	moves := make([]strategy.Move, 100)
 	player := ai.AI{
 		Difficulty: 1.0,
-		Strategies: []strategy.Vector{
-			{
-				Strategy: strategy.NewMovePriority(-1, -1, 0),
-				Weight:   1.0,
-			},
-			{
-				Strategy: strategy.NewReinforceFront(100),
-				Weight:   1.0,
-			},
+		Strategies: []strategy.Strategy{
+			strategy.NewMovePriority(-1, -1, 0),
+			strategy.NewReinforceFront(100),
 		},
 	}
 	player.Initialize(game.Game{Planets: p})

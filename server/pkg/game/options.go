@@ -26,7 +26,7 @@ type PlayerOptions struct {
 var DefaultOptions = Options{
 	PlanetOptions: PlanetOptions{
 		NumPlanets: 60,
-		Radius:     12,
+		Radius:     10,
 		MinRadius:  4,
 	},
 	PlayerOptions: PlayerOptions{

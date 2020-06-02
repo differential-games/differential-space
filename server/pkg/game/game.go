@@ -36,14 +36,21 @@ func New(options Options) (*Game, error) {
 
 	// Generate Players and their starting positions.
 	players := GeneratePlayers(options.PlayerOptions)
-	starts := GenerateStarts(planets, options.PlanetOptions.Radius, options.PlayerOptions.NumPlayers)
-
-	for i, start := range starts {
-		// The 0 player implicitly owns all planets at the start.
-		planets[start].Owner = i + 1
-		planets[start].Ready = true
-		planets[start].Strength = i
-	}
+	GenerateStarts(planets, options.PlanetOptions.Radius, []PlayerStart{
+		{
+			Owner: 1,
+			Starts: []Start{
+				{Strength: 3},
+			},
+		},
+		{
+			Owner: 2,
+			Starts: []Start{
+				{Strength: 1},
+				{Strength: 0},
+			},
+		},
+	})
 
 	result := Game{
 		PlayerTurn:    0,

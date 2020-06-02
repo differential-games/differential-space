@@ -37,14 +37,14 @@ func main() {
 func a() ai.Interface {
 	return &ai.AI{
 		Difficulty: 1.0,
-		Strategies: []strategy.Vector{
-			ai.NewVector(1.0, strategy.NewMovePriority(0.0, -1.0, -1.0)),
-			ai.NewVector(1.0, &strategy.PreferFewerNeighbors{}),
-			ai.NewVector(1.0, strategy.PreferFurther{}),
-			ai.NewVector(1.0, strategy.PreferCloser{}),
-			ai.NewVector(1.0, &strategy.CoordinatedAttack{}),
-			ai.NewVector(1.0, strategy.AttackIfWinLikely{}),
-			ai.NewVector(1.0, strategy.NewReinforceFront(500)),
+		Strategies: []strategy.Strategy{
+			strategy.NewMovePriority(0.0, -1.0, -1.0),
+			&strategy.PreferFewerNeighbors{},
+			strategy.PreferFurther{},
+			strategy.PreferCloser{},
+			&strategy.CoordinatedAttack{},
+			strategy.AttackIfWinLikely{},
+			strategy.NewReinforceFront(strategy.NPlanets * 10),
 		},
 	}
 }
@@ -59,14 +59,14 @@ func base() ai.Interface {
 func b() ai.Interface {
 	return &ai.AI{
 		Difficulty: 1.0,
-		Strategies: []strategy.Vector{
-			ai.NewVector(1.0, strategy.NewMovePriority(0.0, -1.0, -1.0)),
-			ai.NewVector(1.0, &strategy.PreferFewerNeighbors{}),
-			ai.NewVector(1.0, strategy.PreferFurther{}),
-			ai.NewVector(1.0, strategy.PreferCloser{}),
-			ai.NewVector(1.0, &strategy.CoordinatedAttack{}),
-			ai.NewVector(1.0, strategy.AttackIfWinLikely{}),
-			ai.NewVector(1.0, strategy.NewReinforceFront(500)),
+		Strategies: []strategy.Strategy{
+			strategy.NewMovePriority(0.0, -1.0, -1.0),
+			&strategy.PreferFewerNeighbors{},
+			strategy.PreferFurther{},
+			strategy.PreferCloser{},
+			&strategy.CoordinatedAttack{},
+			strategy.AttackIfWinLikely{},
+			strategy.NewReinforceFront(strategy.NPlanets * 10),
 		},
 	}
 }

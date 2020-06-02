@@ -1,13 +1,11 @@
 package strategy
 
 import (
-	"fmt"
 	"github.com/differential-games/differential-space/pkg/game"
 	"math"
-	"sync"
 )
 
-const nPlanets = 60
+const NPlanets = 60
 
 type ReinforceFront struct {
 	maxMoves   int
@@ -25,7 +23,9 @@ func (s *ReinforceFront) Initialize(g game.Game) {
 }
 
 func (s *ReinforceFront) Analyze(moves []Move) {
-	s.distances = make([]float64, len(s.distances))
+	for i := range s.distances {
+		s.distances[i] = 0
+	}
 
 	nReinforces := 0
 	// The more potential moves, the higher priority.
@@ -69,32 +69,20 @@ func (s *ReinforceFront) Analyze(moves []Move) {
 	}
 }
 
-var maxes = make(map[int]float64)
-var maxesMux sync.Mutex
-
-func updateMaxes(strength int, dist float64) {
-	maxesMux.Lock()
-	if maxes[strength] < dist {
-		maxes[strength] = dist
-		fmt.Printf("%d: %.0f\n", strength, dist)
-	}
-	maxesMux.Unlock()
-}
-
-func (s *ReinforceFront) Score(move Move) float64 {
+func (s *ReinforceFront) Score(move *Move) float64 {
 	if move.MoveType != Reinforce {
 		// Ignore non-reinforce moves.
 		return 0.0
 	}
 	fromDist := s.distances[move.From]
-	if fromDist <= s.distances[move.To] {
+	if fromDist < 2 || fromDist <= s.distances[move.To] {
 		// Don't move away from the front line.
 		return 0.0
 	}
 	maxD := math.MaxFloat64
 	switch move.FromStrength {
 	case 1:
-		maxD = 0
+		maxD = 1
 	case 2:
 		maxD = 2
 	case 3:
@@ -106,7 +94,7 @@ func (s *ReinforceFront) Score(move Move) float64 {
 	case 6:
 		maxD = 4
 	case 7:
-		maxD = 4
+		maxD = 5
 	}
 	if fromDist > maxD {
 		return 0.0

@@ -14,14 +14,14 @@ type Interface interface {
 type AI struct {
 	Difficulty float64
 
-	Strategies []strategy.Vector
+	Strategies []strategy.Strategy
 }
 
 var _ Interface = &AI{}
 
 func (ai *AI) Initialize(g game.Game) {
 	for _, s := range ai.Strategies {
-		s.Strategy.Initialize(g)
+		s.Initialize(g)
 	}
 }
 

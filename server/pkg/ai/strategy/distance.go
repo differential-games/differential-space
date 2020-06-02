@@ -10,7 +10,7 @@ func (s PreferFurther) Initialize(game.Game) {}
 
 func (s PreferFurther) Analyze(moves []Move) {}
 
-func (s PreferFurther) Score(move Move) float64 {
+func (s PreferFurther) Score(move *Move) float64 {
 	if move.MoveType != Colonize {
 		return 0.0
 	}
@@ -23,7 +23,7 @@ func (s PreferCloser) Initialize(game.Game) {}
 
 func (s PreferCloser) Analyze(moves []Move) {}
 
-func (s PreferCloser) Score(move Move) float64 {
+func (s PreferCloser) Score(move *Move) float64 {
 	if move.MoveType != Attack {
 		return 0.0
 	}

@@ -51,9 +51,9 @@ func TestAttackAtStrength(t *testing.T) {
 		t.Run(tc.name, tc.Run(func() ai.Interface {
 			return &ai.AI{
 				Difficulty: 1.0,
-				Strategies: []strategy.Vector{
-					ai.NewVector(1.0, strategy.NewMovePriority(-1, -1, -1)),
-					ai.NewVector(1.0, strategy.NewAttackAtStrength(4)),
+				Strategies: []strategy.Strategy{
+					strategy.NewMovePriority(-1, -1, -1),
+					strategy.NewAttackAtStrength(4),
 				},
 			}
 		}))
@@ -93,9 +93,9 @@ func TestAttackIfWinLikely(t *testing.T) {
 		t.Run(tc.name, tc.Run(func() ai.Interface {
 			return &ai.AI{
 				Difficulty: 1.0,
-				Strategies: []strategy.Vector{
-					ai.NewVector(1.0, strategy.NewMovePriority(-1, -1, -1)),
-					ai.NewVector(1.0, strategy.AttackIfWinLikely{}),
+				Strategies: []strategy.Strategy{
+					strategy.NewMovePriority(-1, -1, -1),
+					strategy.AttackIfWinLikely{},
 				},
 			}
 		}))

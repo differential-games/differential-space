@@ -10,6 +10,7 @@ const (
 	Colonize MoveType = iota
 	Attack
 	Reinforce
+	Invalid
 )
 
 // Move is a superset of game.Move which includes all necessary metadata
@@ -45,7 +46,7 @@ func (s MovePriority) Initialize(game.Game) {}
 
 func (s MovePriority) Analyze([]Move) {}
 
-func (s MovePriority) Score(move Move) float64 {
+func (s MovePriority) Score(move *Move) float64 {
 	switch move.MoveType {
 	case Colonize:
 		return s.colonize

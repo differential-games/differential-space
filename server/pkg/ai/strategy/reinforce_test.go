@@ -1,10 +1,11 @@
 package strategy_test
 
 import (
+	"testing"
+
 	"github.com/differential-games/differential-space/pkg/ai"
 	"github.com/differential-games/differential-space/pkg/ai/strategy"
 	"github.com/differential-games/differential-space/pkg/game"
-	"testing"
 )
 
 func TestReinforceFront(t *testing.T) {
@@ -32,9 +33,9 @@ func TestReinforceFront(t *testing.T) {
 		t.Run(tc.name, tc.Run(func() ai.Interface {
 			return &ai.AI{
 				Difficulty: 1.0,
-				Strategies: []strategy.Vector{
-					ai.NewVector(1.0, strategy.NewMovePriority(-1, -1, -1)),
-					ai.NewVector(1.0, strategy.NewReinforceFront(100)),
+				Strategies: []strategy.Strategy{
+					strategy.NewMovePriority(-1, -1, -1),
+					strategy.NewReinforceFront(100),
 				},
 			}
 		}))

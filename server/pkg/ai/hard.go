@@ -19,25 +19,18 @@ import (
 // 1.0 = 1575
 
 // Hard returns an AI using the most-optimized strategies.
-func Hard(nPlanets int, difficulty float64) Interface {
+func Hard(difficulty float64) Interface {
 	return &AI{
 		Difficulty: difficulty,
-		Strategies: []strategy.Vector{
-			NewVector(1.0, strategy.NewMovePriority(0.0, -1.0, -1.0)),
-			NewVector(1.0, &strategy.PreferFewerNeighbors{}),
-			NewVector(1.0, strategy.PreferFurther{}),
-			NewVector(1.0, strategy.PreferCloser{}),
-			NewVector(1.0, strategy.NewAttackAtStrength(game.MaxFleetSize)),
-			NewVector(1.0, &strategy.CoordinatedAttack{}),
-			NewVector(1.0, strategy.AttackIfWinLikely{}),
-			NewVector(1.0, strategy.NewReinforceFront(1000)),
+		Strategies: []strategy.Strategy{
+			strategy.NewMovePriority(0.0, -1.0, -1.0),
+			&strategy.PreferFewerNeighbors{},
+			strategy.PreferFurther{},
+			strategy.PreferCloser{},
+			strategy.NewAttackAtStrength(game.MaxFleetSize),
+			&strategy.CoordinatedAttack{},
+			strategy.AttackIfWinLikely{},
+			strategy.NewReinforceFront(1000),
 		},
-	}
-}
-
-func NewVector(weight float64, s strategy.Strategy) strategy.Vector {
-	return strategy.Vector{
-		Strategy: s,
-		Weight:   weight,
 	}
 }

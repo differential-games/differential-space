@@ -19,12 +19,5 @@ func TestGenerateStarts(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	starts := GenerateStarts(planets, DefaultOptions.PlanetOptions.Radius, DefaultOptions.PlayerOptions.NumPlayers)
-
-	if len(starts) != DefaultOptions.PlayerOptions.NumPlayers {
-		t.Errorf("got len(starts) = %d, want %d",
-			len(starts),
-			DefaultOptions.PlayerOptions.NumPlayers,
-		)
-	}
+	GenerateStarts(planets, DefaultOptions.PlanetOptions.Radius, []PlayerStart{})
 }

@@ -58,9 +58,9 @@ func TestPreferFewerNeighbors(t *testing.T) {
 		t.Run(tc.name, tc.Run(func() ai.Interface {
 			return &ai.AI{
 				Difficulty: 1.0,
-				Strategies: []strategy.Vector{
-					ai.NewVector(1.0, strategy.NewMovePriority(0, -1, -1)),
-					ai.NewVector(1.0, &strategy.PreferFewerNeighbors{}),
+				Strategies: []strategy.Strategy{
+					strategy.NewMovePriority(0, -1, -1),
+					&strategy.PreferFewerNeighbors{},
 				},
 			}
 		}))

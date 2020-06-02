@@ -35,6 +35,9 @@ func (s *PreferFewerNeighbors) Analyze(moves []Move) {
 
 	s.max = 1
 	for _, m := range moves {
+		if m.MoveType != Colonize {
+			continue
+		}
 		s.colonizers[m.To]++
 		if s.colonizers[m.To] > s.max {
 			s.max = s.colonizers[m.To]
@@ -42,7 +45,7 @@ func (s *PreferFewerNeighbors) Analyze(moves []Move) {
 	}
 }
 
-func (s *PreferFewerNeighbors) Score(move Move) float64 {
+func (s *PreferFewerNeighbors) Score(move *Move) float64 {
 	if move.MoveType != Colonize {
 		return 0.0
 	}

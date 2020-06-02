@@ -43,9 +43,9 @@ func TestPreferCloser(t *testing.T) {
 		t.Run(tc.name, tc.Run(func() ai.Interface {
 			return &ai.AI{
 				Difficulty: 1.0,
-				Strategies: []strategy.Vector{
-					ai.NewVector(1.0, strategy.NewMovePriority(-0.01, 0, -1)),
-					ai.NewVector(1.0, &strategy.PreferCloser{}),
+				Strategies: []strategy.Strategy{
+					strategy.NewMovePriority(-0.01, 0, -1),
+					&strategy.PreferCloser{},
 				},
 			}
 		}))
@@ -87,9 +87,9 @@ func TestPreferFurther(t *testing.T) {
 		t.Run(tc.name, tc.Run(func() ai.Interface {
 			return &ai.AI{
 				Difficulty: 1.0,
-				Strategies: []strategy.Vector{
-					ai.NewVector(1.0, strategy.NewMovePriority(0, -0.01, -1)),
-					ai.NewVector(1.0, &strategy.PreferFurther{}),
+				Strategies: []strategy.Strategy{
+					strategy.NewMovePriority(0, -0.01, -1),
+					&strategy.PreferFurther{},
 				},
 			}
 		}))

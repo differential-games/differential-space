@@ -26,7 +26,7 @@ func (e EloDiff) String() string {
 }
 
 func PrintWinRate(n int, a, b func() Interface) EloDiff {
-	score := make(chan int)
+	outcomes := make(chan Outcome)
 
 	rounds := make(chan int, n)
 	go func() {
@@ -36,15 +36,15 @@ func PrintWinRate(n int, a, b func() Interface) EloDiff {
 		close(rounds)
 	}()
 
-	planets := 60
+	planets := strategy.NPlanets
 
 	var wg sync.WaitGroup
 	for i := 0; i < 8; i++ {
 		wg.Add(1)
 		go func() {
 			moves := make([]strategy.Move, 1000)
-			for _ = range rounds {
-				err := doGame(planets, 0, a(), b(), moves, score)
+			for round := range rounds {
+				err := doGame(planets, round, a(), b(), moves, outcomes)
 				if err != nil {
 					panic(err)
 				}
@@ -57,14 +57,17 @@ func PrintWinRate(n int, a, b func() Interface) EloDiff {
 	scoreWg := sync.WaitGroup{}
 	scoreWg.Add(1)
 	go func() {
-		for s := range score {
-			sum += s
+		for o := range outcomes {
+			if (o.Round + o.Winner)%2 == 1 {
+				// Player 1 won
+				sum++
+			}
 		}
 		scoreWg.Done()
 	}()
 
 	wg.Wait()
-	close(score)
+	close(outcomes)
 	scoreWg.Wait()
 
 	p := float64(sum) / (float64(n))
@@ -83,11 +86,17 @@ func PrintWinRate(n int, a, b func() Interface) EloDiff {
 	return elo
 }
 
-func doGame(planets, round int, a, b Interface, moves []strategy.Move, score chan int) error {
+type Outcome struct {
+	Round  int
+	Winner int
+	Turns  int
+}
+
+func doGame(planets, round int, a, b Interface, moves []strategy.Move, outcomes chan Outcome) error {
 	g, err := game.New(game.Options{
 		PlanetOptions: game.PlanetOptions{
 			NumPlanets: planets,
-			Radius:     12,
+			Radius:     10,
 			MinRadius:  4,
 		},
 		PlayerOptions: game.PlayerOptions{
@@ -102,7 +111,9 @@ func doGame(planets, round int, a, b Interface, moves []strategy.Move, score cha
 	b.Initialize(*g)
 
 	winner := 0
+	nTurns := 0
 	err = RunGame(g, func(g *game.Game) (bool, error) {
+		nTurns++
 		if (g.PlayerTurn+round+1)%2 == 1 {
 			err := Turn(g, a, moves)
 			if err != nil {
@@ -129,8 +140,11 @@ func doGame(planets, round int, a, b Interface, moves []strategy.Move, score cha
 		return err
 	}
 
-	if (winner+round)%2 == 1 {
-		score <- 1
+	outcomes <- Outcome{
+		Round:  round,
+		Winner: winner,
+		Turns:  nTurns,
 	}
+
 	return nil
 }
