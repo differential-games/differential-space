@@ -31,15 +31,7 @@ type Move struct {
 }
 
 type MovePriority struct {
-	colonize, attack, reinforce float64
-}
-
-func NewMovePriority(colonize, attack, reinforce float64) MovePriority {
-	return MovePriority{
-		colonize:  colonize,
-		attack:    attack,
-		reinforce: reinforce,
-	}
+	Colonize, Attack, Reinforce float64
 }
 
 func (s MovePriority) Initialize(game.Game) {}
@@ -49,10 +41,10 @@ func (s MovePriority) Analyze([]Move) {}
 func (s MovePriority) Score(move *Move) float64 {
 	switch move.MoveType {
 	case Colonize:
-		return s.colonize
+		return s.Colonize
 	case Attack:
-		return s.attack
+		return s.Attack
 	default:
-		return s.reinforce
+		return s.Reinforce
 	}
 }

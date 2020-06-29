@@ -13,18 +13,14 @@ type CoordinatedAttack struct {
 func (s *CoordinatedAttack) Initialize(game.Game) {}
 
 func (s *CoordinatedAttack) reset() {
-	for _, w := range s.wantFromTo {
-		for i := range w {
-			w[i] = false
-		}
-	}
+	s.wantFromTo = [NPlanets][NPlanets]bool{}
 }
 
 func (s *CoordinatedAttack) Analyze(moves []Move) {
 	s.reset()
 
 	// Track the moves we want.
-	wantFrom := make([]bool, NPlanets)
+	var wantFrom [NPlanets]bool
 
 	// attacks from x to y
 	var attacks [NPlanets][NPlanets]bool

@@ -38,6 +38,12 @@ func (g *Game) move(move Move) {
 
 	// Take over the Planet if it is not already owned by the mover.
 	if to.Owner != from.Owner {
+		g.Scores[to.Owner]--
+		g.Scores[from.Owner]++
+		if g.Scores[from.Owner] > 2*len(g.Planets)/3 {
+			g.Winner = from.Owner
+		}
+
 		to.Owner = from.Owner
 		from.Strength--
 	}

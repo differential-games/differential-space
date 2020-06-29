@@ -13,14 +13,17 @@ func Pick(moves []strategy.Move, strats []strategy.Strategy) []strategy.Move {
 	}
 
 	nMoves := 0
-	for i := range moves {
+	for _, m := range moves {
+		if m.MoveType == strategy.Invalid {
+			continue
+		}
 		score := 0.0
 		for _, strat := range strats {
-			score += strat.Score(&moves[i])
+			score += strat.Score(&m)
 		}
 		if score >= 0.0 {
-			moves[nMoves] = moves[i]
-			moves[nMoves].Score = score
+			m.Score = score
+			moves[nMoves] = m
 			nMoves++
 		}
 	}

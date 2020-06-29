@@ -1,7 +1,10 @@
 package strategy
 
 import (
+	"math"
+
 	"github.com/differential-games/differential-space/pkg/game"
+	"github.com/differential-games/differential-space/pkg/stats"
 )
 
 type PreferFurther struct{}
@@ -27,5 +30,11 @@ func (s PreferCloser) Score(move *Move) float64 {
 	if move.MoveType != Attack {
 		return 0.0
 	}
+	PreferCloserCounter.Input <- int(math.Floor(move.Distance * 5))
 	return 1.0 - move.Distance*game.InvMaxMoveDistance
+}
+
+var PreferCloserCounter = stats.Counter{
+	Input: make(chan int),
+	Data:  [100]int{},
 }

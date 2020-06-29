@@ -44,10 +44,11 @@ func PrintWinRate(n int, a, b func() Interface) EloDiff {
 		go func() {
 			moves := make([]strategy.Move, 1000)
 			for round := range rounds {
-				err := doGame(planets, round, a(), b(), moves, outcomes)
+				outcome, err := RunAIGame(planets, round, a(), b(), moves)
 				if err != nil {
 					panic(err)
 				}
+				outcomes <- outcome
 			}
 			wg.Done()
 		}()
@@ -58,7 +59,7 @@ func PrintWinRate(n int, a, b func() Interface) EloDiff {
 	scoreWg.Add(1)
 	go func() {
 		for o := range outcomes {
-			if (o.Round + o.Winner)%2 == 1 {
+			if (o.Round+o.Winner)%2 == 1 {
 				// Player 1 won
 				sum++
 			}
@@ -92,7 +93,7 @@ type Outcome struct {
 	Turns  int
 }
 
-func doGame(planets, round int, a, b Interface, moves []strategy.Move, outcomes chan Outcome) error {
+func RunAIGame(planets, round int, a, b Interface, moves []strategy.Move) (Outcome, error) {
 	g, err := game.New(game.Options{
 		PlanetOptions: game.PlanetOptions{
 			NumPlanets: planets,
@@ -105,7 +106,7 @@ func doGame(planets, round int, a, b Interface, moves []strategy.Move, outcomes 
 		RotationSpeed: 2.0,
 	})
 	if err != nil {
-		return err
+		return Outcome{}, err
 	}
 	a.Initialize(*g)
 	b.Initialize(*g)
@@ -125,26 +126,19 @@ func doGame(planets, round int, a, b Interface, moves []strategy.Move, outcomes 
 				return false, err
 			}
 		}
-		scores := Scores(2, g.Planets)
-		win := MaxScore(scores) >= planets*2/3
-		if win {
-			for p, score := range scores {
-				if score >= planets*2/3 {
-					winner = p
-				}
-			}
+		if g.Winner != 0 {
+			winner = g.Winner
+			return true, nil
 		}
-		return win, nil
+		return false, nil
 	})
 	if err != nil {
-		return err
+		return Outcome{}, err
 	}
 
-	outcomes <- Outcome{
+	return Outcome{
 		Round:  round,
 		Winner: winner,
 		Turns:  nTurns,
-	}
-
-	return nil
+	}, nil
 }

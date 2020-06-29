@@ -2,10 +2,12 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"math/rand"
 	"os"
 	"runtime/pprof"
+	"sync"
 	"time"
 
 	"github.com/differential-games/differential-space/pkg/ai"
@@ -31,14 +33,36 @@ func main() {
 		defer pprof.StopCPUProfile()
 	}
 
-	ai.PrintWinRate(100000, a, b)
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		strategy.PreferCloserCounter.Process()
+		wg.Done()
+	}()
+
+	ai.PrintWinRate(10000, a, b)
+	close(strategy.PreferCloserCounter.Input)
+
+	wg.Wait()
+	fmt.Println(strategy.PreferCloserCounter.String())
+}
+
+func colonize() ai.Interface {
+	return &ai.AI{
+		Difficulty: 1.0,
+		Strategies: []strategy.Strategy{
+			strategy.MovePriority{Attack: -1.0, Reinforce: -1.0},
+			&strategy.PreferFewerNeighbors{},
+			strategy.PreferFurther{},
+		},
+	}
 }
 
 func a() ai.Interface {
 	return &ai.AI{
 		Difficulty: 1.0,
 		Strategies: []strategy.Strategy{
-			strategy.NewMovePriority(0.0, -1.0, -1.0),
+			strategy.MovePriority{Attack: -1.0, Reinforce: -1.0},
 			&strategy.PreferFewerNeighbors{},
 			strategy.PreferFurther{},
 			strategy.PreferCloser{},
@@ -58,9 +82,9 @@ func base() ai.Interface {
 
 func b() ai.Interface {
 	return &ai.AI{
-		Difficulty: 1.0,
+		Difficulty: 0.2,
 		Strategies: []strategy.Strategy{
-			strategy.NewMovePriority(0.0, -1.0, -1.0),
+			strategy.MovePriority{Attack: -1.0, Reinforce: -1.0},
 			&strategy.PreferFewerNeighbors{},
 			strategy.PreferFurther{},
 			strategy.PreferCloser{},

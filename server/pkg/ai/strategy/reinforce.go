@@ -1,8 +1,9 @@
 package strategy
 
 import (
-	"github.com/differential-games/differential-space/pkg/game"
 	"math"
+
+	"github.com/differential-games/differential-space/pkg/game"
 )
 
 const NPlanets = 60
@@ -38,15 +39,15 @@ func (s *ReinforceFront) Analyze(moves []Move) {
 		}
 	}
 
-	reinforces := s.reinforces[:nReinforces]
 	// The further away from potential moves, the lower priority.
 	nDelete := 0
+	reinforces := s.reinforces[:nReinforces]
 	for {
 		// Keep track of the number deleted each iteration.
 		// We aren't guaranteed there is a path to the front from every planet.
 		// For example, if a few are isolated from the rest of the galaxy for a few turns.
 		nDelete = 0
-		for i, r := range s.reinforces[:nReinforces] {
+		for i, r := range reinforces {
 			if s.distances[r.From] != 0 {
 				// We've already got the distance from the starting planet.
 				reinforces[i] = reinforces[nReinforces-1]

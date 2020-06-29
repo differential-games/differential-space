@@ -2,9 +2,10 @@ package serve
 
 import (
 	"fmt"
-	"github.com/differential-games/differential-space/pkg/ai/strategy"
 	"net/http"
 	"strconv"
+
+	"github.com/differential-games/differential-space/pkg/ai/strategy"
 
 	"github.com/differential-games/differential-space/pkg/ai"
 )

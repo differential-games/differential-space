@@ -12,6 +12,9 @@ type Game struct {
 	Planets []Planet
 	Players []Player
 
+	Scores []int
+	Winner int
+
 	// RotationSpeed is how quickly the galaxy rotates.
 	//
 	// The rotation, in radians, of each planet between consecutive turns for the same player is equal to
@@ -52,10 +55,16 @@ func New(options Options) (*Game, error) {
 		},
 	})
 
+	scores := make([]int, 1+options.NumPlayers)
+	scores[0] = options.NumPlanets - 3
+	scores[1] = 1
+	scores[2] = 2
+
 	result := Game{
 		PlayerTurn:    0,
 		Planets:       planets,
 		Players:       players,
+		Scores:        scores,
 		RotationSpeed: options.RotationSpeed,
 	}
 	return &result, nil

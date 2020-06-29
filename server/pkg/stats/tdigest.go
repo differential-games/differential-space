@@ -3,7 +3,6 @@ package stats
 import (
 	"fmt"
 	"math"
-	"math/rand"
 	"strings"
 )
 
@@ -15,7 +14,7 @@ type centroid struct {
 	maxCount float64
 	// nCentroids is the cached number of centroids the last time we calculated
 	// maxCount.
-	nCentroids float64
+	nCentroids int
 }
 
 func (c *centroid) String() string {
@@ -25,7 +24,7 @@ func (c *centroid) String() string {
 // inc increments the centroid with val.
 func (c *centroid) inc(val float64) {
 	c.count++
-	c.mean = c.mean + (val - c.mean) / c.count
+	c.mean += (val - c.mean) / c.count
 }
 
 type TDigest struct {
@@ -33,14 +32,22 @@ type TDigest struct {
 	compression float64
 	count       float64
 
-	nCentroids float64
+	nCentroids int
+
+	// The cached estimates of the centroids containing the 5% and 95%
+	// percentiles. Updated when new centroids are added.
+	p5Centroid int
+	p95Centroid int
+
+	// appendLower is whether to append to the lower of the two closest
+	// centroids.
+	appendLower bool
 }
 
 func (d *TDigest) String() string {
 	sb := strings.Builder{}
 	for _, c := range d.centroids {
 		sb.WriteString(fmt.Sprintln(c.String()))
-		sb.WriteString(fmt.Sprintln("Max: ", c.maxCount))
 	}
 	return sb.String()
 }
@@ -56,25 +63,65 @@ func NewTDigest(compression float64) *TDigest {
 //
 // centroids is a list of sorted centroids of increasing mean.
 // Must contain at least 2 elements.
-//
-// left is the index of the leftmost centroid when first called. Callers should
-// pass 0.
-func nearest(val float64, centroids []*centroid, left int) int {
-	// Base case.
-	if len(centroids) == 2 {
-		return left
+func (d *TDigest) nearest(val float64) int {
+	left, right := 0, d.nCentroids
+
+	// While this makes the case of small nCentroids more inefficient, it
+	// speeds up the case where nCentroids >= 10, which is the far more common
+	// case as over 90% of elements are inserted in the middle 30% of centroids.
+	if d.centroids[d.p5Centroid].mean < val {
+		left = d.p5Centroid
+		if val < d.centroids[d.p95Centroid].mean {
+			right = d.p95Centroid + 1
+		}
+	} else {
+		right = d.p5Centroid
 	}
 
-	// middle is rounded down, and guaranteed to be 1 or greater.
-	// The recursive call to nearest is guaranteed to include this index.
-	middle := len(centroids) / 2
-
-	if centroids[middle].mean < val {
-		// val is to the right of the middle considered centroid.
-		return nearest(val, centroids[middle:], left+middle)
+	diff := right - left
+	// While the difference between left and right is greater than 32, use a
+	// binary search.
+	for ; diff > 32; diff = right - left {
+		// Remember that middle is rounded down.
+		// Middle for each iteration is guaranteed to be unique.
+		middle := left + diff / 2
+		if d.centroids[middle].mean < val {
+			// val is to the right of the middle considered centroid.
+			if val < d.centroids[middle+1].mean {
+				// middle is what we're looking for, so exit early.
+				return middle
+			}
+			left = middle+1
+		} else {
+			// val is to the left of the middle considered centroid.
+			if d.centroids[middle-1].mean < val {
+				// middle is to the right of what we're looking for, so exit early.
+				return middle - 1
+			}
+			right = middle
+		}
 	}
-	// val is to the left of the middle considered centroid.
-	return nearest(val, centroids[:middle+1], left)
+
+	//center := d.nCentroids / 2
+	//	if left < center {
+	//	// Search downwards
+	//	for i := right - 1; i > 0; i-- {
+	//		if val < d.centroids[i].mean {
+	//			return i
+	//		}
+	//	}
+	//	return left
+	//} else {
+	//
+	//}
+
+	// Search upwards.
+	for i, c := range d.centroids[left+1:] {
+		if val < c.mean {
+			return left+i
+		}
+	}
+	return right-1
 }
 
 // hasRoom returns true if the centroid at idx has room for more elements.
@@ -87,7 +134,7 @@ func (d *TDigest) hasRoom(idx int) bool {
 	// at the limit.
 	centroid := d.centroids[idx]
 	if centroid.count < centroid.maxCount {
-		// We execute this branch 87% of the time.
+		// We exit here instead of continuing 87% of the time.
 		// The cached value says its okay, so we assume it hasn't decreased.
 		return true
 	}
@@ -96,8 +143,8 @@ func (d *TDigest) hasRoom(idx int) bool {
 	// real variable that can increase capacity is the number of centroids. If
 	// it hasn't increased, the weight limit is highly unlikely to have
 	// increased.
-	if centroid.nCentroids >= d.nCentroids {
-		// We execute this branch 96% of the time.
+	if centroid.nCentroids == d.nCentroids {
+		// We exit here instead of continuing 96% of the time.
 		return false
 	}
 
@@ -110,30 +157,28 @@ func (d *TDigest) hasRoom(idx int) bool {
 
 // weightLimit is the maximum acceptable count for the centroid at index idx.
 func (d *TDigest) weightLimit(idx int) float64 {
-
 	ptile := d.quantileOf(idx)
-	return 4 * d.compression * ptile * (1 - ptile) * d.nCentroids
+	return 4 * d.compression * ptile * (1 - ptile) * float64(d.nCentroids)
 }
 
 // quantileOf returns the approximate quantile of centroid idx.
 func (d *TDigest) quantileOf(idx int) float64 {
-	if idx > (int(d.nCentroids) / 2) {
-		return d.quantileOf2(idx)
+	if idx > (d.nCentroids / 2) {
+		// Since we're near the top, compute the quantile by beginning at the
+		// top of the distribution, instead of the bottom. This keeps us from
+		// having to iterate unnecessarily for large percentiles.
+		var total float64
+		for _, c := range d.centroids[idx+1:] {
+			total += c.count
+		}
+		return 1.0 - (d.centroids[idx].count/2 + total) / d.count
 	}
+
 	var total float64
 	for _, c := range d.centroids[:idx] {
 		total += c.count
 	}
 	return (d.centroids[idx].count/2 + total) / d.count
-}
-
-// quantileOf2 is like quantileOf, except it computes quantile from the top.
-func (d *TDigest) quantileOf2(idx int) float64 {
-	var total float64
-	for _, c := range d.centroids[idx+1:] {
-		total += c.count
-	}
-	return 1.0 - (d.centroids[idx].count/2 + total) / d.count
 }
 
 // addCentroid adds a new centroid at index idx with mean mean.
@@ -142,6 +187,22 @@ func (d *TDigest) addCentroid(idx int, mean float64) {
 	d.centroids = append(d.centroids, nil)
 	copy(d.centroids[idx+1:], d.centroids[idx:])
 	d.centroids[idx] = &centroid{mean: mean, count: 1}
+
+	if d.nCentroids >= 3 {
+		// Cache the centroids that cover approximately the 5% to 95% case,
+		// since most centroids are small edge cases near the boundary. This way
+		// we can optimize for the 90% case, and cut down on iterations inside
+		// the d.nearest() loop.
+		//
+		// We can peg this to specific index without computation as the
+		// quantile index of the pth percentile converges to a constant fraction
+		// of the total number of centroids as centroids increases. Here,
+		// guessing is more performant than getting the exact answer.
+		//
+		// The improvement from this is marginal, but measurable. (~4ns)
+		d.p5Centroid = d.nCentroids * 3 / 8
+		d.p95Centroid = (d.nCentroids * 5 / 8) + 1
+	}
 }
 
 // Add adds val to the TDigest.
@@ -154,7 +215,7 @@ func (d *TDigest) Add(val float64) {
 // count.
 func (d *TDigest) add(val float64) {
 	// Cover the trivial cases.
-	switch len(d.centroids) {
+	switch d.nCentroids {
 	case 0:
 		// We haven't added any centroids.
 		d.addCentroid(0, val)
@@ -178,33 +239,28 @@ func (d *TDigest) add(val float64) {
 		return
 	}
 
-	// leftIdx is guaranteed to be len(d.centroids)-2 or less.
-	leftIdx := nearest(val, d.centroids, 0)
+	leftIdx := d.nearest(val)
 	left := d.centroids[leftIdx]
-	right := d.centroids[leftIdx+1]
-
-	// Cover the cases where val is an extreme value - greater or less than
-	// all existing centroids.
+	leftHasRoom := d.hasRoom(leftIdx)
 	switch {
 	case val < left.mean:
-		// val is less than both.
-		// leftIdx is guaranteed to be 0.
-		if d.hasRoom(leftIdx) {
+		if leftHasRoom {
 			left.inc(val)
 			return
 		}
 		// left has no room, so add a new centroid at index 0.
 		d.addCentroid(0, val)
 		return
-	case right.mean < val:
-		// val is greater than both.
-		// leftIdx is guaranteed to be len(d.centroids)-2
-		if d.hasRoom(leftIdx + 1) {
-			// val is greater than right, and right has room.
-			right.inc(val)
-			return
+	case leftIdx == len(d.centroids) - 1:
+		// val is a new maximum.
+		if leftHasRoom {
+			// Add val to the leftmost centroid.
+			left := d.centroids[leftIdx]
+			left.inc(val)
+		} else {
+			// Create a new centroid for the new maximum.
+			d.addCentroid(len(d.centroids), val)
 		}
-		d.addCentroid(len(d.centroids), val)
 		return
 	}
 
@@ -212,17 +268,18 @@ func (d *TDigest) add(val float64) {
 	// This is the most common case.
 	// Whichever centroid we add val to, it is guaranteed to not change the
 	// ordering of left and right.
-	leftHasRoom := d.hasRoom(leftIdx)
 	rightHasRoom := d.hasRoom(leftIdx + 1)
+	right := d.centroids[leftIdx+1]
 	switch {
 	case leftHasRoom && rightHasRoom:
 		// It's most common for both to have room, so check this first.
-		// Choose one randomly.
-		if rand.Intn(2) == 0 {
+		// Flip between the two.
+		if d.appendLower {
 			left.inc(val)
 		} else {
 			right.inc(val)
 		}
+		d.appendLower = !d.appendLower
 	case leftHasRoom && !rightHasRoom:
 		left.inc(val)
 	case !leftHasRoom && rightHasRoom:
