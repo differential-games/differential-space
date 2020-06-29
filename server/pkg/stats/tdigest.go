@@ -36,7 +36,7 @@ type TDigest struct {
 
 	// The cached estimates of the centroids containing the 5% and 95%
 	// percentiles. Updated when new centroids are added.
-	p5Centroid int
+	p5Centroid  int
 	p95Centroid int
 
 	// appendLower is whether to append to the lower of the two closest
@@ -84,14 +84,14 @@ func (d *TDigest) nearest(val float64) int {
 	for ; diff > 32; diff = right - left {
 		// Remember that middle is rounded down.
 		// Middle for each iteration is guaranteed to be unique.
-		middle := left + diff / 2
+		middle := left + diff/2
 		if d.centroids[middle].mean < val {
 			// val is to the right of the middle considered centroid.
 			if val < d.centroids[middle+1].mean {
 				// middle is what we're looking for, so exit early.
 				return middle
 			}
-			left = middle+1
+			left = middle + 1
 		} else {
 			// val is to the left of the middle considered centroid.
 			if d.centroids[middle-1].mean < val {
@@ -102,26 +102,13 @@ func (d *TDigest) nearest(val float64) int {
 		}
 	}
 
-	//center := d.nCentroids / 2
-	//	if left < center {
-	//	// Search downwards
-	//	for i := right - 1; i > 0; i-- {
-	//		if val < d.centroids[i].mean {
-	//			return i
-	//		}
-	//	}
-	//	return left
-	//} else {
-	//
-	//}
-
 	// Search upwards.
 	for i, c := range d.centroids[left+1:] {
 		if val < c.mean {
-			return left+i
+			return left + i
 		}
 	}
-	return right-1
+	return right - 1
 }
 
 // hasRoom returns true if the centroid at idx has room for more elements.
@@ -171,7 +158,7 @@ func (d *TDigest) quantileOf(idx int) float64 {
 		for _, c := range d.centroids[idx+1:] {
 			total += c.count
 		}
-		return 1.0 - (d.centroids[idx].count/2 + total) / d.count
+		return 1.0 - (d.centroids[idx].count/2+total)/d.count
 	}
 
 	var total float64
@@ -251,7 +238,7 @@ func (d *TDigest) add(val float64) {
 		// left has no room, so add a new centroid at index 0.
 		d.addCentroid(0, val)
 		return
-	case leftIdx == len(d.centroids) - 1:
+	case leftIdx == len(d.centroids)-1:
 		// val is a new maximum.
 		if leftHasRoom {
 			// Add val to the leftmost centroid.
@@ -311,7 +298,7 @@ func (d *TDigest) Quantile(q float64) float64 {
 	var qTotal float64
 	var idx int
 	for i, c := range d.centroids {
-		if qTotal + c.count/2 >= q {
+		if qTotal+c.count/2 >= q {
 			idx = i
 			break
 		}
@@ -325,18 +312,18 @@ func (d *TDigest) Quantile(q float64) float64 {
 		c1 := d.centroids[1]
 		slope := 2 * (c1.mean - c0.mean) / (c1.count + c0.count)
 		deltaQ := q - c0.count/2
-		return c0.mean + slope * deltaQ
-	case n-1:
+		return c0.mean + slope*deltaQ
+	case n - 1:
 		c0 := d.centroids[n-2]
 		c1 := d.centroids[n-1]
 		slope := 2 * (c1.mean - c0.mean) / (c1.count + c0.count)
 		deltaQ := q - (qTotal - c1.count/2)
-		return c1.mean + slope * deltaQ
+		return c1.mean + slope*deltaQ
 	}
 
 	c0 := d.centroids[idx-1]
 	c1 := d.centroids[idx]
 	slope := 2 * (c1.mean - c0.mean) / (c1.count + c0.count)
 	deltaQ := q - (c1.count/2 + qTotal)
-	return c1.mean + slope * deltaQ
+	return c1.mean + slope*deltaQ
 }
